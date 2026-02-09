@@ -1,0 +1,4 @@
+.vscode
+.DS_Store
+patch_zh.py
+*.vsix
