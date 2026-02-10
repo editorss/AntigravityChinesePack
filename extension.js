@@ -164,6 +164,7 @@ function getSettingsReplacements() {
         ['"Ask anything, @ to mention, / for workflows"', '"随便问，@ 提及，/ 调用工作流"'],
         ['`Changes Overview (${d})`', '`更改概览 (${d})`'],
         ['text:l?"Collapse all":"Expand all"', 'text:l?"全部折叠":"全部展开"'],
+        ['`Thinking for ${l8(t)}`', '`思考中 ${l8(t)}`'],
         ['`Thought for ${', '`思考了 ${'],
         ['children:"Thought Process"', 'children:"思考过程"'],
         ['"Auto-proceeded by the agent under your review policy."', '"已由 Agent 根据您的审查策略自动继续。"'],
@@ -240,7 +241,8 @@ function getChatReplacements() {
         ['children:"Launch"', 'children:"启动"'],
         ['children:"Open"', 'children:"打开"'],
         ['children:"Ran command"', 'children:"执行命令"'],
-        ['children:"Exit code"', 'children:"退出码"'],
+        // 注意: 实际 chat.js 中是模板字面量 `Exit code ${e.exitCode}`，非双引号字符串
+        ['Exit code ${e.exitCode}', '\\u9000\\u51FA\\u7801 ${e.exitCode}'],
         ['children:"Preview"', 'children:"预览"'],
         ['children:"Refresh"', 'children:"刷新"'],
         ['children:"Retry"', 'children:"重试"'],
@@ -440,6 +442,7 @@ function getChatReplacements() {
         ['text:l?"Collapse all":"Expand all"', 'text:l?"全部折叠":"全部展开"'],
         ['children:"Expand All"', 'children:"全部展开"'],
         ['children:"Collapse All"', 'children:"全部折叠"'],
+        ['`Thinking for ${TTe(t)}`', '`思考中 ${TTe(t)}`'],
         ['`Thought for ${', '`思考了 ${'],
         ['children:"Thought Process"', 'children:"思考过程"'],
         ['"Auto-proceeded by the agent under your review policy."', '"已由 Agent 根据您的审查策略自动继续。"'],
@@ -473,6 +476,563 @@ function getChatReplacements() {
         ['," result",1===e.resources.length?"":"s"', '," 个结果"'],
         ['," result",1===a.length?"":"s"," "', '," 个结果 "'],
         ['," result",1===h?"":"s"', '," 个结果"'],
+        // ═══════════════════════════════════════════════════════════════
+        // 从参考项目 translations_chat.js 合并的翻译词条 (554 条)
+        // ═══════════════════════════════════════════════════════════════
+        ['". As always, you can use the thumbs up or thumbs down feedback mechanism to help improve our metrics."', '"\u3002\u60A8\u53EF\u4EE5\u4F7F\u7528\u70B9\u8D5E\u6216\u70B9\u8E29\u53CD\u9988\u673A\u5236\u6765\u5E2E\u52A9\u6539\u8FDB\u6211\u4EEC\u7684\u6307\u6807\u3002"'],  // 。您可以使用点赞或点踩反馈机制来帮助改进我们的指标。
+        ['"(Dev-only) Select a mixin to use in the agent. This will tailor Cascade for different task types by changing things like the system prompt, tools available, etc."', '"(\u4EC5\u5F00\u53D1) \u9009\u62E9\u8981\u5728\u4EE3\u7406\u4E2D\u4F7F\u7528\u7684\u6DF7\u5165\u3002\u8FD9\u5C06\u901A\u8FC7\u66F4\u6539\u7CFB\u7EDF\u63D0\u793A\u3001\u53EF\u7528\u5DE5\u5177\u7B49\u6765\u4E3A\u4E0D\u540C\u7684\u4EFB\u52A1\u7C7B\u578B\u5B9A\u5236 Cascade\u3002"'],  // (仅开发) 选择要在代理中使用的混入。这将通过更改系统提示、可用工具等来为不同的任务类型定制 Cascade。
+        ['"[Today at] LT"', '"[\u4ECA\u5929] LT"'],  // [今天] LT
+        ['"[Tomorrow at] LT"', '"[\u660E\u5929] LT"'],  // [明天] LT
+        ['"[Yesterday at] LT"', '"[\u6628\u5929] LT"'],  // [昨天] LT
+        ['"%d days"', '"%d \u5929"'],  // %d 天
+        ['"%d hours"', '"%d \u5C0F\u65F6"'],  // %d 小时
+        ['"%d minutes"', '"%d \u5206\u949F"'],  // %d 分钟
+        ['"%d months"', '"%d \u4E2A\u6708"'],  // %d 个月
+        ['"%d seconds"', '"%d \u79D2"'],  // %d 秒
+        ['"%d weeks"', '"%d \u5468"'],  // %d 周
+        ['"%d years"', '"%d \u5E74"'],  // %d 年
+        ['"%s ago"', '"%s\u524D"'],  // %s前
+        ['"2. Resetting Agent"', '"2. \u91CD\u7F6E\u4EE3\u7406"'],  // 2. 重置代理
+        ['"A chunk is a section of the page. Long pages are chunked so that only the sections that are relevant to your query are read."', '"\u5757\u662F\u9875\u9762\u7684\u4E00\u4E2A\u90E8\u5206\u3002\u957F\u9875\u9762\u4F1A\u88AB\u5206\u5757\uFF0C\u4EE5\u4FBF\u53EA\u8BFB\u53D6\u4E0E\u60A8\u7684\u67E5\u8BE2\u76F8\u5173\u7684\u90E8\u5206\u3002"'],  // 块是页面的一个部分。长页面会被分块，以便只读取与您的查询相关的部分。
+        ['"a day"', '"\u4E00\u5929"'],  // 一天
+        ['"a few seconds"', '"\u51E0\u79D2"'],  // 几秒
+        ['"a minute"', '"\u4E00\u5206\u949F"'],  // 一分钟
+        ['"a month"', '"\u4E00\u4E2A\u6708"'],  // 一个月
+        ['"a week"', '"\u4E00\u5468"'],  // 一周
+        ['"a year"', '"\u4E00\u5E74"'],  // 一年
+        ['"Aborted"', '"\u5DF2\u4E2D\u6B62"'],  // 已中止
+        ['"Absolute uri to pbtxt config"', '"pbtxt \u914D\u7F6E\u7684\u7EDD\u5BF9 URI"'],  // pbtxt 配置的绝对 URI
+        ['"Accepted"', '"\u5DF2\u63A5\u53D7"'],  // 已接受
+        ['"Accessibility"', '"\u8F85\u52A9\u529F\u80FD"'],  // 辅助功能
+        ['"Active Browser page"', '"\u6D3B\u52A8\u6D4F\u89C8\u5668\u9875\u9762"'],  // 活动浏览器页面
+        ['"Active Browser pages"', '"\u6D3B\u52A8\u6D4F\u89C8\u5668\u9875\u9762"'],  // 活动浏览器页面
+        ['"Active"', '"\u6D3B\u52A8"'],  // 活动
+        ['"Activities cannot be viewed"', '"\u65E0\u6CD5\u67E5\u770B\u6D3B\u52A8"'],  // 无法查看活动
+        ['"Activity"', '"\u6D3B\u52A8"'],  // 活动
+        ['"Agent Action DOM Diffs:"', '"\u4EE3\u7406\u64CD\u4F5C DOM \u5DEE\u5F02:"'],  // 代理操作 DOM 差异:
+        ['"Agent can click and drag in the browser."', '"\u4EE3\u7406\u53EF\u4EE5\u5728\u6D4F\u89C8\u5668\u4E2D\u70B9\u51FB\u548C\u62D6\u52A8\u3002"'],  // 代理可以在浏览器中点击和拖动。
+        ['"Agent can click on specific elements in the browser."', '"\u4EE3\u7406\u53EF\u4EE5\u70B9\u51FB\u6D4F\u89C8\u5668\u4E2D\u7684\u7279\u5B9A\u5143\u7D20\u3002"'],  // 代理可以点击浏览器中的特定元素。
+        ['"Agent can resize browser windows to different dimensions or window states."', '"\u4EE3\u7406\u53EF\u4EE5\u5C06\u6D4F\u89C8\u5668\u7A97\u53E3\u8C03\u6574\u4E3A\u4E0D\u540C\u7684\u5C3A\u5BF8\u6216\u7A97\u53E3\u72B6\u6001\u3002"'],  // 代理可以将浏览器窗口调整为不同的尺寸或窗口状态。
+        ['"Agent execution terminated due to model provider overload. Please try again later."', '"\u4EE3\u7406\u6267\u884C\u56E0\u6A21\u578B\u63D0\u4F9B\u5546\u8FC7\u8F7D\u800C\u7EC8\u6B62\u3002\u8BF7\u7A0D\u540E\u91CD\u8BD5\u3002"'],  // 代理执行因模型提供商过载而终止。请稍后重试。
+        ['"Agent terminated due to error"', '"\u4EE3\u7406\u56E0\u9519\u8BEF\u800C\u7EC8\u6B62"'],  // 代理因错误而终止
+        ['"Allow once"', '"\u5141\u8BB8\u4E00\u6B21"'],  // 允许一次
+        ['"Already exists"', '"\u5DF2\u5B58\u5728"'],  // 已存在
+        ['"Alt text:"', '"\u66FF\u4EE3\u6587\u672C:"'],  // 替代文本:
+        ['"Always allow"', '"\u59CB\u7EC8\u5141\u8BB8"'],  // 始终允许
+        ['"Always ask for permission"', '"\u59CB\u7EC8\u8BE2\u95EE\u6743\u9650"'],  // 始终询问权限
+        ['"Always Auto-Run"', '"\u59CB\u7EC8\u81EA\u52A8\u8FD0\u884C"'],  // 始终自动运行
+        ['"Always run terminal commands"', '"\u59CB\u7EC8\u8FD0\u884C\u7EC8\u7AEF\u547D\u4EE4"'],  // 始终运行终端命令
+        ['"An error ID that helps the team investigate the error."', '"\u5E2E\u52A9\u56E2\u961F\u8C03\u67E5\u9519\u8BEF\u7684\u9519\u8BEF ID\u3002"'],  // 帮助团队调查错误的错误 ID。
+        ['"an hour"', '"\u4E00\u5C0F\u65F6"'],  // 一小时
+        ['"An unknown error occurred"', '"\u53D1\u751F\u672A\u77E5\u9519\u8BEF"'],  // 发生未知错误
+        ['"Approved"', '"\u5DF2\u6279\u51C6"'],  // 已批准
+        ['"Argument must be a Buffer"', '"\u53C2\u6570\u5FC5\u987B\u662F Buffer"'],  // 参数必须是 Buffer
+        ['"Arguments Schema:"', '"\u53C2\u6570\u6A21\u5F0F:"'],  // 参数模式:
+        ['"Artifact Comments"', '"\u5DE5\u4EF6\u8BC4\u8BBA"'],  // 工件评论
+        ['"Artifact image"', '"\u5DE5\u4EF6\u56FE\u50CF"'],  // 工件图像
+        ['"Artifacts are created when the agent performs more complex, longer running tasks while in Planning mode."', '"\u5DE5\u4EF6\u662F\u4EE3\u7406\u5728\u89C4\u5212\u6A21\u5F0F\u4E0B\u6267\u884C\u66F4\u590D\u6742\u3001\u8017\u65F6\u66F4\u957F\u7684\u4EFB\u52A1\u65F6\u521B\u5EFA\u7684\u3002"'],  // 工件是代理在规划模式下执行更复杂、耗时更长的任务时创建的。
+        ['"At mention"', '"@ \u5F15\u7528"'],  // @ 引用
+        ['"Attach the trajectory ID to the feedback form"', '"\u5C06\u8F68\u8FF9 ID \u9644\u52A0\u5230\u53CD\u9988\u8868\u5355"'],  // 将轨迹 ID 附加到反馈表单
+        ['"Attempt to write outside buffer bounds"', '"\u5C1D\u8BD5\u5199\u5165\u7F13\u51B2\u533A\u8FB9\u754C\u5916"'],  // 尝试写入缓冲区边界外
+        ['"Attribute"', '"\u5C5E\u6027"'],  // 属性
+        ['"Authorization"', '"\u6388\u6743"'],  // 授权
+        ['"Auto-Run On Model Decision"', '"\u6839\u636E\u6A21\u578B\u51B3\u7B56\u81EA\u52A8\u8FD0\u884C"'],  // 根据模型决策自动运行
+        ['"Back to content"', '"\u8FD4\u56DE\u5185\u5BB9"'],  // 返回内容
+        ['"background terminal command"', '"\u540E\u53F0\u7EC8\u7AEF\u547D\u4EE4"'],  // 后台终端命令
+        ['"Backwards"', '"\u5411\u540E"'],  // 向后
+        ['"Baseline"', '"\u57FA\u7EBF"'],  // 基线
+        ['"BETA"', '"\u6D4B\u8BD5\u7248"'],  // 测试版
+        ['"Billed at API pricing"', '"\u6309 API \u5B9A\u4EF7\u8BA1\u8D39"'],  // 按 API 定价计费
+        ['"Browser Code"', '"\u6D4F\u89C8\u5668\u4EE3\u7801"'],  // 浏览器代码
+        ['"Browser Content"', '"\u6D4F\u89C8\u5668\u5185\u5BB9"'],  // 浏览器内容
+        ['"Browser Mode:"', '"\u6D4F\u89C8\u5668\u6A21\u5F0F:"'],  // 浏览器模式:
+        ['"Browser Text"', '"\u6D4F\u89C8\u5668\u6587\u672C"'],  // 浏览器文本
+        ['"Browser Tool Set Mode:"', '"\u6D4F\u89C8\u5668\u5DE5\u5177\u96C6\u6A21\u5F0F:"'],  // 浏览器工具集模式:
+        ['"Browser Tools:"', '"\u6D4F\u89C8\u5668\u5DE5\u5177:"'],  // 浏览器工具:
+        ['"Bytes"', '"\u5B57\u8282"'],  // 字节
+        ['"Canceled creation of"', '"\u5DF2\u53D6\u6D88\u521B\u5EFA"'],  // 已取消创建
+        ['"Canceled deletion of"', '"\u5DF2\u53D6\u6D88\u5220\u9664"'],  // 已取消删除
+        ['"Canceled edit to"', '"\u5DF2\u53D6\u6D88\u7F16\u8F91"'],  // 已取消编辑
+        ['"Canceled extension code"', '"\u5DF2\u53D6\u6D88\u6269\u5C55\u4EE3\u7801"'],  // 已取消扩展代码
+        ['"Canceled"', '"\u5DF2\u53D6\u6D88"'],  // 已取消
+        ['"Cannot revert messages with artifact comments"', '"\u65E0\u6CD5\u64A4\u9500\u5305\u542B\u5DE5\u4EF6\u8BC4\u8BBA\u7684\u6D88\u606F"'],  // 无法撤销包含工件评论的消息
+        ['"Cannot revert messages with file comments"', '"\u65E0\u6CD5\u64A4\u9500\u5305\u542B\u6587\u4EF6\u8BC4\u8BBA\u7684\u6D88\u606F"'],  // 无法撤销包含文件评论的消息
+        ['"Cannot revert messages with file diff comments"', '"\u65E0\u6CD5\u64A4\u9500\u5305\u542B\u6587\u4EF6\u5DEE\u5F02\u8BC4\u8BBA\u7684\u6D88\u606F"'],  // 无法撤销包含文件差异评论的消息
+        ['"Cannot revert this message"', '"\u65E0\u6CD5\u64A4\u9500\u6B64\u6D88\u606F"'],  // 无法撤销此消息
+        ['"Caps Lock"', '"\u5927\u5199\u9501\u5B9A"'],  // 大写锁定
+        ['"Chat Model Metadata"', '"\u804A\u5929\u6A21\u578B\u5143\u6570\u636E"'],  // 聊天模型元数据
+        ['"Checked command status"', '"\u5DF2\u68C0\u67E5\u547D\u4EE4\u72B6\u6001"'],  // 已检查命令状态
+        ['"Checking command status"', '"\u6B63\u5728\u68C0\u67E5\u547D\u4EE4\u72B6\u6001"'],  // 正在检查命令状态
+        ['"Clear NUX state"', '"\u6E05\u9664\u65B0\u7528\u6237\u72B6\u6001"'],  // 清除新用户状态
+        ['"Cleared Count"', '"\u5DF2\u6E05\u9664\u8BA1\u6570"'],  // 已清除计数
+        ['"Click Feedback:"', '"\u70B9\u51FB\u53CD\u9988:"'],  // 点击反馈:
+        ['"Clicked in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u70B9\u51FB"'],  // 在浏览器中点击
+        ['"Clicked"', '"\u5DF2\u70B9\u51FB"'],  // 已点击
+        ['"Clicking in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u70B9\u51FB"'],  // 正在浏览器中点击
+        ['"Clicking"', '"\u70B9\u51FB\u4E2D"'],  // 点击中
+        ['"Closed"', '"\u5DF2\u5173\u95ED"'],  // 已关闭
+        ['"Closing"', '"\u5173\u95ED\u4E2D"'],  // 关闭中
+        ['"Code Context Item Subranges"', '"\u4EE3\u7801\u4E0A\u4E0B\u6587\u5B50\u8303\u56F4"'],  // 代码上下文子范围
+        ['"Code Context Items"', '"\u4EE3\u7801\u4E0A\u4E0B\u6587\u9879"'],  // 代码上下文项
+        ['"Code Snippet"', '"\u4EE3\u7801\u7247\u6BB5"'],  // 代码片段
+        ['"Combobox"', '"\u7EC4\u5408\u6846"'],  // 组合框
+        ['"Configure Auto-Run"', '"\u914D\u7F6E\u81EA\u52A8\u8FD0\u884C"'],  // 配置自动运行
+        ['"Confirm Browser Interaction"', '"\u786E\u8BA4\u6D4F\u89C8\u5668\u4EA4\u4E92"'],  // 确认浏览器交互
+        ['"Confirming this undo action will make the following changes:"', '"\u786E\u8BA4\u6B64\u64A4\u9500\u64CD\u4F5C\u5C06\u8FDB\u884C\u4EE5\u4E0B\u66F4\u6539:"'],  // 确认此撤销操作将进行以下更改:
+        ['"Console Logs"', '"\u63A7\u5236\u53F0\u65E5\u5FD7"'],  // 控制台日志
+        ['"Conversational"', '"\u5BF9\u8BDD\u5F0F"'],  // 对话式
+        ['"Coordinated Universal Time"', '"\u534F\u8C03\u4E16\u754C\u65F6"'],  // 协调世界时
+        ['"copied"', '"\u5DF2\u590D\u5236"'],  // 已复制
+        ['"Copied"', '"\u5DF2\u590D\u5236"'],  // 已复制
+        ['"Copy Link"', '"\u590D\u5236\u94FE\u63A5"'],  // 复制链接
+        ['"Copy to clipboard"', '"\u590D\u5236\u5230\u526A\u8D34\u677F"'],  // 复制到剪贴板
+        ['"Cost"', '"\u6210\u672C"'],  // 成本
+        ['"Created At"', '"\u521B\u5EFA\u65F6\u95F4"'],  // 创建时间
+        ['"Created:"', '"\u521B\u5EFA\u4E8E:"'],  // 创建于:
+        ['"Creating"', '"\u521B\u5EFA\u4E2D"'],  // 创建中
+        ['"Custom Config"', '"\u81EA\u5B9A\u4E49\u914D\u7F6E"'],  // 自定义配置
+        ['"Custom models are only supported on Cloudtop / Linux machines."', '"\u81EA\u5B9A\u4E49\u6A21\u578B\u4EC5\u5728 Cloudtop / Linux \u673A\u5668\u4E0A\u652F\u6301\u3002"'],  // 自定义模型仅在 Cloudtop / Linux 机器上支持。
+        ['"Custom Reminder:"', '"\u81EA\u5B9A\u4E49\u63D0\u9192:"'],  // 自定义提醒:
+        ['"Custom URI"', '"\u81EA\u5B9A\u4E49 URI"'],  // 自定义 URI
+        ['"Data loss"', '"\u6570\u636E\u4E22\u5931"'],  // 数据丢失
+        ['"Dead"', '"\u5DF2\u7EC8\u6B62"'],  // 已终止
+        ['"Deadline exceeded"', '"\u8D85\u65F6"'],  // 超时
+        ['"Debug Mode"', '"\u8C03\u8BD5\u6A21\u5F0F"'],  // 调试模式
+        ['"Debug Sidebar"', '"\u8C03\u8BD5\u4FA7\u8FB9\u680F"'],  // 调试侧边栏
+        ['"Default Config"', '"\u9ED8\u8BA4\u914D\u7F6E"'],  // 默认配置
+        ['"Deleted"', '"\u5DF2\u5220\u9664"'],  // 已删除
+        ['"Deleting"', '"\u5220\u9664\u4E2D"'],  // 删除中
+        ['"Description:"', '"\u63CF\u8FF0:"'],  // 描述:
+        ['"Description"', '"\u63CF\u8FF0"'],  // 描述
+        ['"Developer Menu"', '"\u5F00\u53D1\u8005\u83DC\u5355"'],  // 开发者菜单
+        ['"Dialog"', '"\u5BF9\u8BDD\u6846"'],  // 对话框
+        ['"Diameter"', '"\u76F4\u5F84"'],  // 直径
+        ['"Directories"', '"\u76EE\u5F55"'],  // 目录
+        ['"Disabled in Secure Mode"', '"\u5728\u5B89\u5168\u6A21\u5F0F\u4E0B\u5DF2\u7981\u7528"'],  // 在安全模式下已禁用
+        ['"Disclosure"', '"\u62AB\u9732"'],  // 披露
+        ['"Dismiss suggested actions"', '"\u5173\u95ED\u5EFA\u8BAE\u64CD\u4F5C"'],  // 关闭建议操作
+        ['"Document Answers"', '"\u6587\u6863\u7B54\u6848"'],  // 文档答案
+        ['"DOM Element"', '"DOM \u5143\u7D20"'],  // DOM 元素
+        ['"Dragged in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u62D6\u62FD"'],  // 在浏览器中拖拽
+        ['"Dragging in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u62D6\u62FD"'],  // 正在浏览器中拖拽
+        ['"Dynamic Wait Tool:"', '"\u52A8\u6001\u7B49\u5F85\u5DE5\u5177:"'],  // 动态等待工具:
+        ['"Editing"', '"\u7F16\u8F91\u4E2D"'],  // 编辑中
+        ['"Electron Mode"', '"Electron \u6A21\u5F0F"'],  // Electron 模式
+        ['"Empty"', '"\u7A7A"'],  // 空
+        ['"Enabled"', '"\u5DF2\u542F\u7528"'],  // 已启用
+        ['"End of comment missing"', '"\u7F3A\u5C11\u6CE8\u91CA\u7ED3\u5C3E"'],  // 缺少注释结尾
+        ['"Enlarged image"', '"\u653E\u5927\u7684\u56FE\u50CF"'],  // 放大的图像
+        ['"Enter Agent ID"', '"\u8F93\u5165\u4EE3\u7406 ID"'],  // 输入代理 ID
+        ['"Enter custom reminder text for the planner..."', '"\u8F93\u5165\u89C4\u5212\u5668\u7684\u81EA\u5B9A\u4E49\u63D0\u9192\u6587\u672C..."'],  // 输入规划器的自定义提醒文本...
+        ['"Ephemeral Options:"', '"\u4E34\u65F6\u9009\u9879:"'],  // 临时选项:
+        ['"Equal"', '"\u76F8\u7B49"'],  // 相等
+        ['"Error checking microphone availability:"', '"\u68C0\u67E5\u9EA6\u514B\u98CE\u53EF\u7528\u6027\u65F6\u51FA\u9519:"'],  // 检查麦克风可用性时出错:
+        ['"Error Details:"', '"\u9519\u8BEF\u8BE6\u60C5:"'],  // 错误详情:
+        ['"Error Details"', '"\u9519\u8BEF\u8BE6\u60C5"'],  // 错误详情
+        ['"Error during tool execution"', '"\u5DE5\u5177\u6267\u884C\u671F\u95F4\u51FA\u9519"'],  // 工具执行期间出错
+        ['"Error editing file"', '"\u7F16\u8F91\u6587\u4EF6\u65F6\u51FA\u9519"'],  // 编辑文件时出错
+        ['"Error in event listener:"', '"\u4E8B\u4EF6\u76D1\u542C\u5668\u51FA\u9519:"'],  // 事件监听器出错:
+        ['"Error occurred"', '"\u53D1\u751F\u9519\u8BEF"'],  // 发生错误
+        ['"Error opening workspace quick pick:"', '"\u6253\u5F00\u5DE5\u4F5C\u533A\u5FEB\u901F\u9009\u62E9\u65F6\u51FA\u9519:"'],  // 打开工作区快速选择时出错:
+        ['"Error parsing JSON:"', '"\u89E3\u6790 JSON \u65F6\u51FA\u9519:"'],  // 解析 JSON 时出错:
+        ['"Error rendering CodeBlock"', '"\u6E32\u67D3\u4EE3\u7801\u5757\u65F6\u51FA\u9519"'],  // 渲染代码块时出错
+        ['"Error rendering Markdown"', '"\u6E32\u67D3 Markdown \u65F6\u51FA\u9519"'],  // 渲染 Markdown 时出错
+        ['"Error rendering playback"', '"\u6E32\u67D3\u56DE\u653E\u65F6\u51FA\u9519"'],  // 渲染回放时出错
+        ['"Error viewing file"', '"\u67E5\u770B\u6587\u4EF6\u65F6\u51FA\u9519"'],  // 查看文件时出错
+        ['"Error while analyzing directory"', '"\u5206\u6790\u76EE\u5F55\u65F6\u51FA\u9519"'],  // 分析目录时出错
+        ['"Error while editing"', '"\u7F16\u8F91\u65F6\u51FA\u9519"'],  // 编辑时出错
+        ['"Error while running command"', '"\u8FD0\u884C\u547D\u4EE4\u65F6\u51FA\u9519"'],  // 运行命令时出错
+        ['"Error while running MCP tool"', '"\u8FD0\u884C MCP \u5DE5\u5177\u65F6\u51FA\u9519"'],  // 运行 MCP 工具时出错
+        ['"Error while searching filesystem"', '"\u641C\u7D22\u6587\u4EF6\u7CFB\u7EDF\u65F6\u51FA\u9519"'],  // 搜索文件系统时出错
+        ['"Error while searching the web"', '"\u641C\u7D22\u7F51\u9875\u65F6\u51FA\u9519"'],  // 搜索网页时出错
+        ['"Error while searching"', '"\u641C\u7D22\u65F6\u51FA\u9519"'],  // 搜索时出错
+        ['"Error while semantic searching"', '"\u8BED\u4E49\u641C\u7D22\u65F6\u51FA\u9519"'],  // 语义搜索时出错
+        ['"Error while viewing"', '"\u67E5\u770B\u65F6\u51FA\u9519"'],  // 查看时出错
+        ['"Execute Javascript policy"', '"\u6267\u884C JavaScript \u7B56\u7565"'],  // 执行 JavaScript 策略
+        ['"Expected a function"', '"\u671F\u671B\u4E00\u4E2A\u51FD\u6570"'],  // 期望一个函数
+        ['"Expected a string"', '"\u671F\u671B\u4E00\u4E2A\u5B57\u7B26\u4E32"'],  // 期望一个字符串
+        ['"Expected array or object as schema"', '"\u671F\u671B\u6570\u7EC4\u6216\u5BF9\u8C61\u4F5C\u4E3A\u67B6\u6784"'],  // 期望数组或对象作为架构
+        ['"Expected character"', '"\u671F\u671B\u5B57\u7B26"'],  // 期望字符
+        ['"Expected substring"', '"\u671F\u671B\u5B50\u5B57\u7B26\u4E32"'],  // 期望子字符串
+        ['"Extension client not available"', '"\u6269\u5C55\u5BA2\u6237\u7AEF\u4E0D\u53EF\u7528"'],  // 扩展客户端不可用
+        ['"Extracted DOM elements"', '"\u5DF2\u63D0\u53D6 DOM \u5143\u7D20"'],  // 已提取 DOM 元素
+        ['"Extracting DOM elements"', '"\u6B63\u5728\u63D0\u53D6 DOM \u5143\u7D20"'],  // 正在提取 DOM 元素
+        ['"Failed precondition"', '"\u524D\u7F6E\u6761\u4EF6\u5931\u8D25"'],  // 前置条件失败
+        ['"Failed to add URL to allowlist: addToBrowserAllowlist is undefined"', '"\u6DFB\u52A0 URL \u5230\u767D\u540D\u5355\u5931\u8D25: addToBrowserAllowlist \u672A\u5B9A\u4E49"'],  // 添加 URL 到白名单失败: addToBrowserAllowlist 未定义
+        ['"Failed to add URL to allowlist:"', '"\u6DFB\u52A0 URL \u5230\u767D\u540D\u5355\u5931\u8D25:"'],  // 添加 URL 到白名单失败:
+        ['"Failed to copy text using Clipboard API: "', '"\u4F7F\u7528\u526A\u8D34\u677F API \u590D\u5236\u6587\u672C\u5931\u8D25: "'],  // 使用剪贴板 API 复制文本失败: 
+        ['"Failed to copy text using document.execCommand: "', '"\u4F7F\u7528 document.execCommand \u590D\u5236\u6587\u672C\u5931\u8D25: "'],  // 使用 document.execCommand 复制文本失败: 
+        ['"Failed to create workflow:"', '"\u521B\u5EFA\u5DE5\u4F5C\u6D41\u5931\u8D25:"'],  // 创建工作流失败:
+        ['"Failed to delete queued message:"', '"\u5220\u9664\u6392\u961F\u6D88\u606F\u5931\u8D25:"'],  // 删除排队消息失败:
+        ['"Failed to enable server, click to see details."', '"\u542F\u7528\u670D\u52A1\u5668\u5931\u8D25\uFF0C\u70B9\u51FB\u67E5\u770B\u8BE6\u60C5\u3002"'],  // 启用服务器失败，点击查看详情。
+        ['"Failed to extract waveform:"', '"\u63D0\u53D6\u6CE2\u5F62\u5931\u8D25:"'],  // 提取波形失败:
+        ['"Failed to fetch custom agent configs:"', '"\u83B7\u53D6\u81EA\u5B9A\u4E49\u4EE3\u7406\u914D\u7F6E\u5931\u8D25:"'],  // 获取自定义代理配置失败:
+        ['"failed to fetch HEAD for "', '"\u83B7\u53D6 HEAD \u5931\u8D25: "'],  // 获取 HEAD 失败: 
+        ['"Failed to find the root element"', '"\u672A\u80FD\u627E\u5230\u6839\u5143\u7D20"'],  // 未能找到根元素
+        ['"Failed to get static experiments"', '"\u83B7\u53D6\u9759\u6001\u5B9E\u9A8C\u5931\u8D25"'],  // 获取静态实验失败
+        ['"Failed to open plugin page: "', '"\u6253\u5F00\u63D2\u4EF6\u9875\u9762\u5931\u8D25: "'],  // 打开插件页面失败: 
+        ['"Failed to parse ContextScopeItem from mention node:"', '"\u4ECE\u63D0\u53CA\u8282\u70B9\u89E3\u6790 ContextScopeItem \u5931\u8D25:"'],  // 从提及节点解析 ContextScopeItem 失败:
+        ['"Failed to parse quota metadata"', '"\u89E3\u6790\u914D\u989D\u5143\u6570\u636E\u5931\u8D25"'],  // 解析配额元数据失败
+        ['"Failed to parse quota reset timestamp"', '"\u89E3\u6790\u914D\u989D\u91CD\u7F6E\u65F6\u95F4\u6233\u5931\u8D25"'],  // 解析配额重置时间戳失败
+        ['"Failed to parse tool JSON schema:"', '"\u89E3\u6790\u5DE5\u5177 JSON \u6A21\u5F0F\u5931\u8D25:"'],  // 解析工具 JSON 模式失败:
+        ['"Failed to parse toolCallArgumentsJson:"', '"\u89E3\u6790 toolCallArgumentsJson \u5931\u8D25:"'],  // 解析 toolCallArgumentsJson 失败:
+        ['"Failed to refresh user memories:"', '"\u5237\u65B0\u7528\u6237\u8BB0\u5FC6\u5931\u8D25:"'],  // 刷新用户记忆失败:
+        ['"Failed to start screen recording"', '"\u542F\u52A8\u5C4F\u5E55\u5F55\u5236\u5931\u8D25"'],  // 启动屏幕录制失败
+        ['"File Comments"', '"\u6587\u4EF6\u8BC4\u8BBA"'],  // 文件评论
+        ['"File Diff Comments"', '"\u6587\u4EF6\u5DEE\u5F02\u8BC4\u8BBA"'],  // 文件差异评论
+        ['"Files to edit:"', '"\u8981\u7F16\u8F91\u7684\u6587\u4EF6:"'],  // 要编辑的文件:
+        ['"First argument must be a string"', '"\u7B2C\u4E00\u4E2A\u53C2\u6570\u5FC5\u987B\u662F\u5B57\u7B26\u4E32"'],  // 第一个参数必须是字符串
+        ['"Focus"', '"\u805A\u7126"'],  // 聚焦
+        ['"Focused"', '"\u5DF2\u805A\u7126"'],  // 已聚焦
+        ['"Folder"', '"\u6587\u4EF6\u5939"'],  // 文件夹
+        ['"Folders"', '"\u6587\u4EF6\u5939"'],  // 文件夹
+        ['"Footnotes"', '"\u811A\u6CE8"'],  // 脚注
+        ['"Forward"', '"\u524D\u8FDB"'],  // 前进
+        ['"Forwards"', '"\u5411\u524D"'],  // 向前
+        ['"Found references to"', '"\u627E\u5230\u5F15\u7528"'],  // 找到引用
+        ['"Fragment"', '"\u7247\u6BB5"'],  // 片段
+        ['"Full Metadata"', '"\u5B8C\u6574\u5143\u6570\u636E"'],  // 完整元数据
+        ['"Gemini Computer Use"', '"Gemini \u8BA1\u7B97\u673A\u4F7F\u7528"'],  // Gemini 计算机使用
+        ['"Generated image preview"', '"\u751F\u6210\u7684\u56FE\u50CF\u9884\u89C8"'],  // 生成的图像预览
+        ['"Generating extension code"', '"\u6B63\u5728\u751F\u6210\u6269\u5C55\u4EE3\u7801"'],  // 正在生成扩展代码
+        ['"Goal"', '"\u76EE\u6807"'],  // 目标
+        ['"Greater"', '"\u5927\u4E8E"'],  // 大于
+        ['"Hashing function not available"', '"\u54C8\u5E0C\u51FD\u6570\u4E0D\u53EF\u7528"'],  // 哈希函数不可用
+        ['"Heading"', '"\u6807\u9898"'],  // 标题
+        ['"Hidden"', '"\u5DF2\u9690\u85CF"'],  // 已隐藏
+        ['"Hide 0s"', '"\u9690\u85CF 0 \u79D2"'],  // 隐藏 0 秒
+        ['"Hours"', '"\u5C0F\u65F6"'],  // 小时
+        ['"I did"', '"\u5DF2\u5B8C\u6210"'],  // 已完成
+        ['"If you believe this is a bug, please"', '"\u5982\u679C\u60A8\u8BA4\u4E3A\u8FD9\u662F\u4E00\u4E2A bug\uFF0C\u8BF7"'],  // 如果您认为这是一个 bug，请
+        ['"Ignore warning and attempt to send messages anyway regardless of network connection status. As a result, messages may get dropped."', '"\u5FFD\u7565\u8B66\u544A\u5E76\u5C1D\u8BD5\u53D1\u9001\u6D88\u606F\uFF0C\u65E0\u8BBA\u7F51\u7EDC\u8FDE\u63A5\u72B6\u6001\u5982\u4F55\u3002\u56E0\u6B64\uFF0C\u6D88\u606F\u53EF\u80FD\u4F1A\u4E22\u5931\u3002"'],  // 忽略警告并尝试发送消息，无论网络连接状态如何。因此，消息可能会丢失。
+        ['"Image Answers"', '"\u56FE\u50CF\u7B54\u6848"'],  // 图像答案
+        ['"Image Diff Not Supported"', '"\u4E0D\u652F\u6301\u56FE\u50CF\u5DEE\u5F02"'],  // 不支持图像差异
+        ['"Image rendering blocked (Secure Mode enabled)"', '"\u56FE\u50CF\u6E32\u67D3\u88AB\u963B\u6B62 (\u5B89\u5168\u6A21\u5F0F\u5DF2\u542F\u7528)"'],  // 图像渲染被阻止 (安全模式已启用)
+        ['"Image URL:"', '"\u56FE\u50CF URL:"'],  // 图像 URL:
+        ['"in %s"', '"%s\u540E"'],  // %s后
+        ['"In progress"', '"\u8FDB\u884C\u4E2D"'],  // 进行中
+        ['"Index out of range"', '"\u7D22\u5F15\u8D85\u51FA\u8303\u56F4"'],  // 索引超出范围
+        ['"Initializing"', '"\u521D\u59CB\u5316\u4E2D"'],  // 初始化中
+        ['"Input"', '"\u8F93\u5165"'],  // 输入
+        ['"Insert in terminal"', '"\u63D2\u5165\u5230\u7EC8\u7AEF"'],  // 插入到终端
+        ['"Inspected commit"', '"\u5DF2\u68C0\u67E5\u7684\u63D0\u4EA4"'],  // 已检查的提交
+        ['"Internal"', '"\u5185\u90E8"'],  // 内部
+        ['"Invalid argument"', '"\u65E0\u6548\u53C2\u6570"'],  // 无效参数
+        ['"Invalid code point"', '"\u65E0\u6548\u7684\u4EE3\u7801\u70B9"'],  // 无效的代码点
+        ['"Invalid date"', '"\u65E0\u6548\u65E5\u671F"'],  // 无效日期
+        ['"Invalid metadata page"', '"\u65E0\u6548\u7684\u5143\u6570\u636E\u9875\u9762"'],  // 无效的元数据页面
+        ['"Invalid time value"', '"\u65E0\u6548\u7684\u65F6\u95F4\u503C"'],  // 无效的时间值
+        ['"Invariant Violation"', '"\u4E0D\u53D8\u91CF\u8FDD\u89C4"'],  // 不变量违规
+        ['"JavaScript Result"', '"JavaScript \u7ED3\u679C"'],  // JavaScript 结果
+        ['"Jumps to the location of the terminal session that ran this command."', '"\u8DF3\u8F6C\u5230\u8FD0\u884C\u6B64\u547D\u4EE4\u7684\u7EC8\u7AEF\u4F1A\u8BDD\u4F4D\u7F6E\u3002"'],  // 跳转到运行此命令的终端会话位置。
+        ['"Language server client not available"', '"\u8BED\u8A00\u670D\u52A1\u5668\u5BA2\u6237\u7AEF\u4E0D\u53EF\u7528"'],  // 语言服务器客户端不可用
+        ['"Legacy"', '"\u65E7\u7248"'],  // 旧版
+        ['"Less"', '"\u5C0F\u4E8E"'],  // 小于
+        ['"Line Ranges"', '"\u884C\u8303\u56F4"'],  // 行范围
+        ['"List resources: "', '"\u5217\u51FA\u8D44\u6E90: "'],  // 列出资源: 
+        ['"Listbox"', '"\u5217\u8868\u6846"'],  // 列表框
+        ['"LLMs can generate incorrect responses that we cannot handle."', '"LLM \u53EF\u80FD\u751F\u6210\u6211\u4EEC\u65E0\u6CD5\u5904\u7406\u7684\u9519\u8BEF\u54CD\u5E94\u3002"'],  // LLM 可能生成我们无法处理的错误响应。
+        ['"Malformed diff information"', '"\u5DEE\u5F02\u4FE1\u606F\u683C\u5F0F\u9519\u8BEF"'],  // 差异信息格式错误
+        ['"Manually Captured"', '"\u624B\u52A8\u6355\u83B7"'],  // 手动捕获
+        ['"Manually Rejected"', '"\u624B\u52A8\u62D2\u7EDD"'],  // 手动拒绝
+        ['"Max Context Characters (optional):"', '"\u6700\u5927\u4E0A\u4E0B\u6587\u5B57\u7B26\u6570 (\u53EF\u9009):"'],  // 最大上下文字符数 (可选):
+        ['"Max Tokens"', '"\u6700\u5927 Token \u6570"'],  // 最大 Token 数
+        ['"MCP Tool: "', '"MCP \u5DE5\u5177: "'],  // MCP 工具: 
+        ['"Metadata:"', '"\u5143\u6570\u636E:"'],  // 元数据:
+        ['"Metadata"', '"\u5143\u6570\u636E"'],  // 元数据
+        ['"Metric"', '"\u6307\u6807"'],  // 指标
+        ['"Milliseconds"', '"\u6BEB\u79D2"'],  // 毫秒
+        ['"Minutes"', '"\u5206\u949F"'],  // 分钟
+        ['"Missing chat params context"', '"\u7F3A\u5C11\u804A\u5929\u53C2\u6570\u4E0A\u4E0B\u6587"'],  // 缺少聊天参数上下文
+        ['"Mixins"', '"\u6DF7\u5165"'],  // 混入
+        ['"Model Label"', '"\u6A21\u578B\u6807\u7B7E"'],  // 模型标签
+        ['"Model URL"', '"\u6A21\u578B URL"'],  // 模型 URL
+        ['"Month"', '"\u6708"'],  // 月
+        ['"Move Mouse in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u79FB\u52A8\u9F20\u6807"'],  // 在浏览器中移动鼠标
+        ['"Move"', '"\u79FB\u52A8"'],  // 移动
+        ['"Moves this terminal session to the Terminal tab in your IDE. The agent will still be able to use it."', '"\u5C06\u6B64\u7EC8\u7AEF\u4F1A\u8BDD\u79FB\u52A8\u5230 IDE \u7684\u7EC8\u7AEF\u9009\u9879\u5361\u3002\u4EE3\u7406\u4ECD\u53EF\u4EE5\u4F7F\u7528\u5B83\u3002"'],  // 将此终端会话移动到 IDE 的终端选项卡。代理仍可以使用它。
+        ['"Moving Mouse in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u79FB\u52A8\u9F20\u6807"'],  // 正在浏览器中移动鼠标
+        ['"Never Auto-Run"', '"\u4ECE\u4E0D\u81EA\u52A8\u8FD0\u884C"'],  // 从不自动运行
+        ['"No @-mention results"', '"\u65E0 @ \u5F15\u7528\u7ED3\u679C"'],  // 无 @ 引用结果
+        ['"No chat model metadata available for this generator"', '"\u6B64\u751F\u6210\u5668\u65E0\u53EF\u7528\u7684\u804A\u5929\u6A21\u578B\u5143\u6570\u636E"'],  // 此生成器无可用的聊天模型元数据
+        ['"No chat model metadata available in latest generator metadata"', '"\u6700\u65B0\u751F\u6210\u5668\u5143\u6570\u636E\u4E2D\u65E0\u53EF\u7528\u7684\u804A\u5929\u6A21\u578B\u5143\u6570\u636E"'],  // 最新生成器元数据中无可用的聊天模型元数据
+        ['"No content available for this resource"', '"\u6B64\u8D44\u6E90\u65E0\u53EF\u7528\u5185\u5BB9"'],  // 此资源无可用内容
+        ['"No credits used"', '"\u672A\u4F7F\u7528\u79EF\u5206"'],  // 未使用积分
+        ['"No description"', '"\u65E0\u63CF\u8FF0"'],  // 无描述
+        ['"No generator metadata available"', '"\u65E0\u53EF\u7528\u7684\u751F\u6210\u5668\u5143\u6570\u636E"'],  // 无可用的生成器元数据
+        ['"No Javascript Result Output"', '"\u65E0 JavaScript \u7ED3\u679C\u8F93\u51FA"'],  // 无 JavaScript 结果输出
+        ['"No message prompts available"', '"\u65E0\u53EF\u7528\u7684\u6D88\u606F\u63D0\u793A"'],  // 无可用的消息提示
+        ['"No Model Selected"', '"\u672A\u9009\u62E9\u6A21\u578B"'],  // 未选择模型
+        ['"No renderer found for step case"', '"\u672A\u627E\u5230\u6B65\u9AA4\u6E32\u67D3\u5668"'],  // 未找到步骤渲染器
+        ['"No resources available"', '"\u65E0\u53EF\u7528\u8D44\u6E90"'],  // 无可用资源
+        ['"No response from extension client"', '"\u6269\u5C55\u5BA2\u6237\u7AEF\u65E0\u54CD\u5E94"'],  // 扩展客户端无响应
+        ['"No screenshot returned from captureScreenshot RPC"', '"captureScreenshot RPC \u672A\u8FD4\u56DE\u622A\u56FE"'],  // captureScreenshot RPC 未返回截图
+        ['"No snapshot taken"', '"\u672A\u62CD\u6444\u5FEB\u7167"'],  // 未拍摄快照
+        ['"No step index found for artifact code action step"', '"\u672A\u627E\u5230\u5DE5\u4EF6\u4EE3\u7801\u64CD\u4F5C\u6B65\u9AA4\u7684\u6B65\u9AA4\u7D22\u5F15"'],  // 未找到工件代码操作步骤的步骤索引
+        ['"No step index found for code action step"', '"\u672A\u627E\u5230\u4EE3\u7801\u64CD\u4F5C\u6B65\u9AA4\u7684\u6B65\u9AA4\u7D22\u5F15"'],  // 未找到代码操作步骤的步骤索引
+        ['"No trajectories available"', '"\u65E0\u53EF\u7528\u8F68\u8FF9"'],  // 无可用轨迹
+        ['"No trajectory steps available"', '"\u65E0\u53EF\u7528\u8F68\u8FF9\u6B65\u9AA4"'],  // 无可用轨迹步骤
+        ['"No trajectory"', '"\u65E0\u8F68\u8FF9"'],  // 无轨迹
+        ['"No URL returned from server"', '"\u670D\u52A1\u5668\u672A\u8FD4\u56DE URL"'],  // 服务器未返回 URL
+        ['"No versions available"', '"\u65E0\u53EF\u7528\u7248\u672C"'],  // 无可用版本
+        ['"None"', '"\u65E0"'],  // 无
+        ['"Not a redirect error"', '"\u4E0D\u662F\u91CD\u5B9A\u5411\u9519\u8BEF"'],  // 不是重定向错误
+        ['"Not implemented"', '"\u672A\u5B9E\u73B0"'],  // 未实现
+        ['"Nothing"', '"\u65E0"'],  // 无
+        ['"Open extracted DOM tree in editor"', '"\u5728\u7F16\u8F91\u5668\u4E2D\u6253\u5F00\u63D0\u53D6\u7684 DOM \u6811"'],  // 在编辑器中打开提取的 DOM 树
+        ['"Open in Terminal"', '"\u5728\u7EC8\u7AEF\u4E2D\u6253\u5F00"'],  // 在终端中打开
+        ['"Open PLX dashboard for metadata index "', '"\u6253\u5F00\u5143\u6570\u636E\u7D22\u5F15\u7684 PLX \u4EEA\u8868\u677F "'],  // 打开元数据索引的 PLX 仪表板 
+        ['"Open Trajectory Dashboard"', '"\u6253\u5F00\u8F68\u8FF9\u4EEA\u8868\u677F"'],  // 打开轨迹仪表板
+        ['"Opened URL in Browser"', '"\u5DF2\u5728\u6D4F\u89C8\u5668\u4E2D\u6253\u5F00 URL"'],  // 已在浏览器中打开 URL
+        ['"Opening URL in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u6253\u5F00 URL"'],  // 正在浏览器中打开 URL
+        ['"Opening"', '"\u6253\u5F00\u4E2D"'],  // 打开中
+        ['"Opens the associated terminal session in the Terminal tab in your IDE."', '"\u5728 IDE \u7684\u7EC8\u7AEF\u9009\u9879\u5361\u4E2D\u6253\u5F00\u5173\u8054\u7684\u7EC8\u7AEF\u4F1A\u8BDD\u3002"'],  // 在 IDE 的终端选项卡中打开关联的终端会话。
+        ['"Out of range index"', '"\u7D22\u5F15\u8D85\u51FA\u8303\u56F4"'],  // 索引超出范围
+        ['"Out of range"', '"\u8D85\u51FA\u8303\u56F4"'],  // 超出范围
+        ['"Output"', '"\u8F93\u51FA"'],  // 输出
+        ['"Overflow"', '"\u6EA2\u51FA"'],  // 溢出
+        ['"Page contents"', '"\u9875\u9762\u5185\u5BB9"'],  // 页面内容
+        ['"Parentheses"', '"\u5706\u62EC\u53F7"'],  // 圆括号
+        ['"Parser was already resumed"', '"\u89E3\u6790\u5668\u5DF2\u6062\u590D"'],  // 解析器已恢复
+        ['"Paste or type ID here"', '"\u5728\u6B64\u7C98\u8D34\u6216\u8F93\u5165 ID"'],  // 在此粘贴或输入 ID
+        ['"Pending comments"', '"\u5F85\u5904\u7406\u8BC4\u8BBA"'],  // 待处理评论
+        ['"Permission denied"', '"\u6743\u9650\u88AB\u62D2\u7EDD"'],  // 权限被拒绝
+        ['"Pressed"', '"\u5DF2\u6309\u4E0B"'],  // 已按下
+        ['"Pressing"', '"\u6309\u4E0B\u4E2D"'],  // 按下中
+        ['"Processing"', '"\u5904\u7406\u4E2D"'],  // 处理中
+        ['"Profiler"', '"\u5206\u6790\u5668"'],  // 分析器
+        ['"Radius:"', '"\u534A\u5F84:"'],  // 半径:
+        ['"Ran extension code"', '"\u5DF2\u8FD0\u884C\u6269\u5C55\u4EE3\u7801"'],  // 已运行扩展代码
+        ['"Read Browser Page in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u8BFB\u53D6\u9875\u9762"'],  // 在浏览器中读取页面
+        ['"Read page"', '"\u8BFB\u53D6\u9875\u9762"'],  // 读取页面
+        ['"Read resource: "', '"\u8BFB\u53D6\u8D44\u6E90: "'],  // 读取资源: 
+        ['"Reading Browser Page in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u8BFB\u53D6\u9875\u9762"'],  // 正在浏览器中读取页面
+        ['"Reading page"', '"\u6B63\u5728\u8BFB\u53D6\u9875\u9762"'],  // 正在读取页面
+        ['"Reading"', '"\u8BFB\u53D6\u4E2D"'],  // 读取中
+        ['"Ready"', '"\u5C31\u7EEA"'],  // 就绪
+        ['"Recommended"', '"\u63A8\u8350"'],  // 推荐
+        ['"Record voice memo"', '"\u5F55\u5236\u8BED\u97F3\u5907\u5FD8"'],  // 录制语音备忘
+        ['"Reference"', '"\u5F15\u7528"'],  // 引用
+        ['"Refresh Custom Agent Configs"', '"\u5237\u65B0\u81EA\u5B9A\u4E49\u4EE3\u7406\u914D\u7F6E"'],  // 刷新自定义代理配置
+        ['"Refresh trajectory list"', '"\u5237\u65B0\u8F68\u8FF9\u5217\u8868"'],  // 刷新轨迹列表
+        ['"Rejected extension code"', '"\u5DF2\u62D2\u7EDD\u6269\u5C55\u4EE3\u7801"'],  // 已拒绝扩展代码
+        ['"Remove audio"', '"\u79FB\u9664\u97F3\u9891"'],  // 移除音频
+        ['"Rendered Step:"', '"\u6E32\u67D3\u6B65\u9AA4:"'],  // 渲染步骤:
+        ['"Rendering playback"', '"\u6E32\u67D3\u56DE\u653E"'],  // 渲染回放
+        ['"Repositories"', '"\u4ED3\u5E93"'],  // 仓库
+        ['"Requested changes"', '"\u8BF7\u6C42\u7684\u66F4\u6539"'],  // 请求的更改
+        ['"Resized Browser window"', '"\u5DF2\u8C03\u6574\u6D4F\u89C8\u5668\u7A97\u53E3\u5927\u5C0F"'],  // 已调整浏览器窗口大小
+        ['"Resizing Browser window"', '"\u6B63\u5728\u8C03\u6574\u6D4F\u89C8\u5668\u7A97\u53E3\u5927\u5C0F"'],  // 正在调整浏览器窗口大小
+        ['"Resource exhausted"', '"\u8D44\u6E90\u8017\u5C3D"'],  // 资源耗尽
+        ['"Retrieved Browser Pages"', '"\u5DF2\u83B7\u53D6\u6D4F\u89C8\u5668\u9875\u9762"'],  // 已获取浏览器页面
+        ['"Retrieved Console Logs from Browser"', '"\u5DF2\u4ECE\u6D4F\u89C8\u5668\u83B7\u53D6\u63A7\u5236\u53F0\u65E5\u5FD7"'],  // 已从浏览器获取控制台日志
+        ['"Retrieved"', '"\u5DF2\u83B7\u53D6"'],  // 已获取
+        ['"Retrieving Browser Pages"', '"\u6B63\u5728\u83B7\u53D6\u6D4F\u89C8\u5668\u9875\u9762"'],  // 正在获取浏览器页面
+        ['"Retrieving Console Logs from Browser"', '"\u6B63\u5728\u4ECE\u6D4F\u89C8\u5668\u83B7\u53D6\u63A7\u5236\u53F0\u65E5\u5FD7"'],  // 正在从浏览器获取控制台日志
+        ['"Retrieving"', '"\u83B7\u53D6\u4E2D"'],  // 获取中
+        ['"Right"', '"\u53F3"'],  // 右
+        ['"Run code?"', '"\u8FD0\u884C\u4EE3\u7801?"'],  // 运行代码?
+        ['"Run command?"', '"\u8FD0\u884C\u547D\u4EE4?"'],  // 运行命令?
+        ['"Run extension code"', '"\u8FD0\u884C\u6269\u5C55\u4EE3\u7801"'],  // 运行扩展代码
+        ['"Running extension code"', '"\u6B63\u5728\u8FD0\u884C\u6269\u5C55\u4EE3\u7801"'],  // 正在运行扩展代码
+        ['"Scroll to bottom"', '"\u6EDA\u52A8\u5230\u5E95\u90E8"'],  // 滚动到底部
+        ['"Scrolled down in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u5411\u4E0B\u6EDA\u52A8"'],  // 在浏览器中向下滚动
+        ['"Scrolled in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u6EDA\u52A8"'],  // 在浏览器中滚动
+        ['"Scrolled up in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u5411\u4E0A\u6EDA\u52A8"'],  // 在浏览器中向上滚动
+        ['"Scrolled"', '"\u5DF2\u6EDA\u52A8"'],  // 已滚动
+        ['"Scrolling down in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u5411\u4E0B\u6EDA\u52A8"'],  // 正在浏览器中向下滚动
+        ['"Scrolling in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u6EDA\u52A8"'],  // 正在浏览器中滚动
+        ['"Scrolling up in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u5411\u4E0A\u6EDA\u52A8"'],  // 正在浏览器中向上滚动
+        ['"Searched"', '"\u5DF2\u641C\u7D22"'],  // 已搜索
+        ['"Searching"', '"\u641C\u7D22\u4E2D"'],  // 搜索中
+        ['"Seconds"', '"\u79D2"'],  // 秒
+        ['"Sections"', '"\u90E8\u5206"'],  // 部分
+        ['"See our"', '"\u67E5\u770B\u6211\u4EEC\u7684"'],  // 查看我们的
+        ['"See plans"', '"\u67E5\u770B\u65B9\u6848"'],  // 查看方案
+        ['"Segment Metrics"', '"\u5206\u6BB5\u6307\u6807"'],  // 分段指标
+        ['"Select a model using the model selector in the input box"', '"\u4F7F\u7528\u8F93\u5165\u6846\u4E2D\u7684\u6A21\u578B\u9009\u62E9\u5668\u9009\u62E9\u6A21\u578B"'],  // 使用输入框中的模型选择器选择模型
+        ['"Select from known"', '"\u4ECE\u5DF2\u77E5\u4E2D\u9009\u62E9"'],  // 从已知中选择
+        ['"Select Model:"', '"\u9009\u62E9\u6A21\u578B:"'],  // 选择模型:
+        ['"Select Option in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u9009\u62E9\u9009\u9879"'],  // 在浏览器中选择选项
+        ['"Select option"', '"\u9009\u62E9\u9009\u9879"'],  // 选择选项
+        ['"Selecting Option in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u9009\u62E9\u9009\u9879"'],  // 正在浏览器中选择选项
+        ['"Semantic searched"', '"\u5DF2\u8BED\u4E49\u641C\u7D22"'],  // 已语义搜索
+        ['"Semantic searching"', '"\u8BED\u4E49\u641C\u7D22\u4E2D"'],  // 语义搜索中
+        ['"Send feedback"', '"\u53D1\u9001\u53CD\u9988"'],  // 发送反馈
+        ['"Shapes"', '"\u5F62\u72B6"'],  // 形状
+        ['"Sheet"', '"\u8868\u683C"'],  // 表格
+        ['"Sherlog Links"', '"Sherlog \u94FE\u63A5"'],  // Sherlog 链接
+        ['"Show 0s"', '"\u663E\u793A 0 \u79D2"'],  // 显示 0 秒
+        ['"Show all resources"', '"\u663E\u793A\u6240\u6709\u8D44\u6E90"'],  // 显示所有资源
+        ['"Show allowlist"', '"\u663E\u793A\u5141\u8BB8\u5217\u8868"'],  // 显示允许列表
+        ['"Show fewer resources"', '"\u663E\u793A\u8F83\u5C11\u8D44\u6E90"'],  // 显示较少资源
+        ['"Show less"', '"\u663E\u793A\u66F4\u5C11"'],  // 显示更少
+        ['"Show page allowlist"', '"\u663E\u793A\u9875\u9762\u5141\u8BB8\u5217\u8868"'],  // 显示页面允许列表
+        ['"Simulated Key Press in Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u6A21\u62DF\u6309\u952E"'],  // 在浏览器中模拟按键
+        ['"Simulating Key Press in Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u6A21\u62DF\u6309\u952E"'],  // 正在浏览器中模拟按键
+        ['"Site Allowlist"', '"\u7F51\u7AD9\u5141\u8BB8\u5217\u8868"'],  // 网站允许列表
+        ['"Some non-image binary content was truncated."', '"\u90E8\u5206\u975E\u56FE\u50CF\u4E8C\u8FDB\u5236\u5185\u5BB9\u5DF2\u88AB\u622A\u65AD\u3002"'],  // 部分非图像二进制内容已被截断。
+        ['"Source:"', '"\u6765\u6E90:"'],  // 来源:
+        ['"Step handler not available"', '"\u6B65\u9AA4\u5904\u7406\u7A0B\u5E8F\u4E0D\u53EF\u7528"'],  // 步骤处理程序不可用
+        ['"Step JSON:"', '"\u6B65\u9AA4 JSON:"'],  // 步骤 JSON:
+        ['"Step Type"', '"\u6B65\u9AA4\u7C7B\u578B"'],  // 步骤类型
+        ['"Step:"', '"\u6B65\u9AA4:"'],  // 步骤:
+        ['"Stop recording"', '"\u505C\u6B62\u5F55\u5236"'],  // 停止录制
+        ['"Subagent Context Mode:"', '"\u5B50\u4EE3\u7406\u4E0A\u4E0B\u6587\u6A21\u5F0F:"'],  // 子代理上下文模式:
+        ['"Subagent Reminder Mode:"', '"\u5B50\u4EE3\u7406\u63D0\u9192\u6A21\u5F0F:"'],  // 子代理提醒模式:
+        ['"System Message"', '"\u7CFB\u7EDF\u6D88\u606F"'],  // 系统消息
+        ['"Take trajectory snapshot"', '"\u62CD\u6444\u8F68\u8FF9\u5FEB\u7167"'],  // 拍摄轨迹快照
+        ['"Taking Screenshot"', '"\u6B63\u5728\u622A\u56FE"'],  // 正在截图
+        ['"Terminal command"', '"\u7EC8\u7AEF\u547D\u4EE4"'],  // 终端命令
+        ['"This operation was aborted"', '"\u6B64\u64CD\u4F5C\u5DF2\u4E2D\u6B62"'],  // 此操作已中止
+        ['"This browser lacks typed array (Uint8Array) support which is required by `buffer` v5.x. Use `buffer` v4.x if you require old browser support."', '"\u6B64\u6D4F\u89C8\u5668\u7F3A\u5C11 `buffer` v5.x \u6240\u9700\u7684\u7C7B\u578B\u5316\u6570\u7EC4 (Uint8Array) \u652F\u6301\u3002\u5982\u679C\u9700\u8981\u65E7\u6D4F\u89C8\u5668\u652F\u6301\uFF0C\u8BF7\u4F7F\u7528 `buffer` v4.x\u3002"'],  // 此浏览器缺少 `buffer` v5.x 所需的类型化数组 (Uint8Array) 支持。如果需要旧浏览器支持，请使用 `buffer` v4.x。
+        ['"To provide feedback"', '"\u63D0\u4F9B\u53CD\u9988"'],  // 提供反馈
+        ['"Toggle Debug Mode"', '"\u5207\u6362\u8C03\u8BD5\u6A21\u5F0F"'],  // 切换调试模式
+        ['"Toggle Debug Sidebar"', '"\u5207\u6362\u8C03\u8BD5\u4FA7\u8FB9\u680F"'],  // 切换调试侧边栏
+        ['"Toggle Dev View"', '"\u5207\u6362\u5F00\u53D1\u89C6\u56FE"'],  // 切换开发视图
+        ['"Toggle Ephemeral Messages"', '"\u5207\u6362\u4E34\u65F6\u6D88\u606F"'],  // 切换临时消息
+        ['"Toggle Incognito Mode"', '"\u5207\u6362\u65E0\u75D5\u6A21\u5F0F"'],  // 切换无痕模式
+        ['"Took Screenshot"', '"\u5DF2\u622A\u56FE"'],  // 已截图
+        ['"Tool Calls"', '"\u5DE5\u5177\u8C03\u7528"'],  // 工具调用
+        ['"Trajectory ID"', '"\u8F68\u8FF9 ID"'],  // 轨迹 ID
+        ['"Trajectory Metrics"', '"\u8F68\u8FF9\u6307\u6807"'],  // 轨迹指标
+        ['"Trajectory Snapshot"', '"\u8F68\u8FF9\u5FEB\u7167"'],  // 轨迹快照
+        ['"Trajectory Stats"', '"\u8F68\u8FF9\u7EDF\u8BA1"'],  // 轨迹统计
+        ['"Trigger must be a single character"', '"\u89E6\u53D1\u5668\u5FC5\u987B\u662F\u5355\u4E2A\u5B57\u7B26"'],  // 触发器必须是单个字符
+        ['"Trigger must be one character long"', '"\u89E6\u53D1\u5668\u957F\u5EA6\u5FC5\u987B\u4E3A\u4E00\u4E2A\u5B57\u7B26"'],  // 触发器长度必须为一个字符
+        ['"Trying to access beyond buffer length"', '"\u5C1D\u8BD5\u8BBF\u95EE\u8D85\u51FA\u7F13\u51B2\u533A\u957F\u5EA6"'],  // 尝试访问超出缓冲区长度
+        ['"Type into Browser"', '"\u5728\u6D4F\u89C8\u5668\u4E2D\u8F93\u5165"'],  // 在浏览器中输入
+        ['"Typeahead menu"', '"\u81EA\u52A8\u5B8C\u6210\u83DC\u5355"'],  // 自动完成菜单
+        ['"Typing into Browser"', '"\u6B63\u5728\u6D4F\u89C8\u5668\u4E2D\u8F93\u5165"'],  // 正在浏览器中输入
+        ['"Unauthenticated"', '"\u672A\u8BA4\u8BC1"'],  // 未认证
+        ['"Unavailable"', '"\u4E0D\u53EF\u7528"'],  // 不可用
+        ['"Underflow"', '"\u4E0B\u6EA2"'],  // 下溢
+        ['"Undo changes up to this point"', '"\u64A4\u9500\u5230\u6B64\u5904\u7684\u66F4\u6539"'],  // 撤销到此处的更改
+        ['"Unexpected undefined"', '"\u610F\u5916\u7684\u672A\u5B9A\u4E49"'],  // 意外的未定义
+        ['"Unidentified"', '"\u672A\u8BC6\u522B"'],  // 未识别
+        ['"Unimplemented"', '"\u672A\u5B9E\u73B0"'],  // 未实现
+        ['"Unknown error fetching browser pages"', '"\u83B7\u53D6\u6D4F\u89C8\u5668\u9875\u9762\u65F6\u53D1\u751F\u672A\u77E5\u9519\u8BEF"'],  // 获取浏览器页面时发生未知错误
+        ['"Unknown error occurred"', '"\u53D1\u751F\u672A\u77E5\u9519\u8BEF"'],  // 发生未知错误
+        ['"Unknown error"', '"\u672A\u77E5\u9519\u8BEF"'],  // 未知错误
+        ['"Unknown path"', '"\u672A\u77E5\u8DEF\u5F84"'],  // 未知路径
+        ['"Unknown quota limit error reason"', '"\u672A\u77E5\u914D\u989D\u9650\u5236\u9519\u8BEF\u539F\u56E0"'],  // 未知配额限制错误原因
+        ['"Unknown state"', '"\u672A\u77E5\u72B6\u6001"'],  // 未知状态
+        ['"Unmount"', '"\u5378\u8F7D"'],  // 卸载
+        ['"Unnamed resource"', '"\u672A\u547D\u540D\u8D44\u6E90"'],  // 未命名资源
+        ['"Unsupported browser target"', '"\u4E0D\u652F\u6301\u7684\u6D4F\u89C8\u5668\u76EE\u6807"'],  // 不支持的浏览器目标
+        ['"untitled"', '"\u672A\u547D\u540D"'],  // 未命名
+        ['"Upload to Agent"', '"\u4E0A\u4F20\u5230\u4EE3\u7406"'],  // 上传到代理
+        ['"Upload"', '"\u4E0A\u4F20"'],  // 上传
+        ['"User Implicit Trajectories"', '"\u7528\u6237\u9690\u5F0F\u8F68\u8FF9"'],  // 用户隐式轨迹
+        ['"User Implicit"', '"\u7528\u6237\u9690\u5F0F"'],  // 用户隐式
+        ['"User uploaded image"', '"\u7528\u6237\u4E0A\u4F20\u7684\u56FE\u50CF"'],  // 用户上传的图像
+        ['"Users"', '"\u7528\u6237"'],  // 用户
+        ['"Uses your API key"', '"\u4F7F\u7528\u60A8\u7684 API \u5BC6\u94A5"'],  // 使用您的 API 密钥
+        ['"Value"', '"\u503C"'],  // 值
+        ['"Visible only"', '"\u4EC5\u53EF\u89C1"'],  // 仅可见
+        ['"Wait for"', '"\u7B49\u5F85"'],  // 等待
+        ['"Waiting"', '"\u7B49\u5F85\u4E2D"'],  // 等待中
+        ['"When debug mode is on, you can see additional information about each steps in the conversation."', '"\u5F00\u542F\u8C03\u8BD5\u6A21\u5F0F\u540E\uFF0C\u60A8\u53EF\u4EE5\u67E5\u770B\u5BF9\u8BDD\u4E2D\u6BCF\u4E2A\u6B65\u9AA4\u7684\u989D\u5916\u4FE1\u606F\u3002"'],  // 开启调试模式后，您可以查看对话中每个步骤的额外信息。
+        ['"With Markdown Trajectory Summary"', '"\u5305\u542B Markdown \u8F68\u8FF9\u6458\u8981"'],  // 包含 Markdown 轨迹摘要
+        ['"Unleash failed to resolve \\"fetch\\""', '"Unleash \u65E0\u6CD5\u89E3\u6790 \\"fetch\\""'],  // Unleash \u65E0\u6CD5\u89E3\u6790 \\"fetch\\"
+        ['"Unleash failed to resolve \\"AbortController\\" factory"', '"Unleash \u65E0\u6CD5\u89E3\u6790 \\"AbortController\\" \u5DE5\u5382"'],  // Unleash \u65E0\u6CD5\u89E3\u6790 \\"AbortController\\" \u5DE5\u5382
+        ['"Unleash: You must either provide your own \\"fetch\\" implementation or run in an environment where \\"fetch\\" is available."', '"Unleash: \u60A8\u5FC5\u987B\u63D0\u4F9B\u81EA\u5DF1\u7684 \\"fetch\\" \u5B9E\u73B0\uFF0C\u6216\u5728 \\"fetch\\" \u53EF\u7528\u7684\u73AF\u5883\u4E2D\u8FD0\u884C\u3002"'],  // Unleash: \u60A8\u5FC5\u987B\u63D0\u4F9B\u81EA\u5DF1\u7684 \\"fetch\\" \u5B9E\u73B0\uFF0C\u6216\u5728 \\"fetch\\" \u53EF\u7528\u7684\u73AF\u5883\u4E2D\u8FD0\u884C\u3002
+        ['"Unleash: You must either provide your own \\"AbortController\\" implementation or run in an environment where \\"AbortController\\" is available."', '"Unleash: \u60A8\u5FC5\u987B\u63D0\u4F9B\u81EA\u5DF1\u7684 \\"AbortController\\" \u5B9E\u73B0\uFF0C\u6216\u5728 \\"AbortController\\" \u53EF\u7528\u7684\u73AF\u5883\u4E2D\u8FD0\u884C\u3002"'],  // Unleash: \u60A8\u5FC5\u987B\u63D0\u4F9B\u81EA\u5DF1\u7684 \\"AbortController\\" \u5B9E\u73B0\uFF0C\u6216\u5728 \\"AbortController\\" \u53EF\u7528\u7684\u73AF\u5883\u4E2D\u8FD0\u884C\u3002
+        ['"Unleash SDK has already started, if you want to restart the SDK you should call client.stop() before starting again."', '"Unleash SDK \u5DF2\u542F\u52A8\uFF0C\u5982\u679C\u8981\u91CD\u65B0\u542F\u52A8 SDK\uFF0C\u5E94\u5148\u8C03\u7528 client.stop()\u3002"'],  // Unleash SDK 已启动，如果要重新启动 SDK，应先调用 client.stop()。
+        ['"Unleash: Fetching feature toggles did not have an ok response"', '"Unleash: \u83B7\u53D6\u529F\u80FD\u5F00\u5173\u672A\u6536\u5230\u6B63\u5E38\u54CD\u5E94"'],  // Unleash: 获取功能开关未收到正常响应
+        ['"Unleash: unable to fetch feature toggles"', '"Unleash: \u65E0\u6CD5\u83B7\u53D6\u529F\u80FD\u5F00\u5173"'],  // Unleash: 无法获取功能开关
+        ['"Unleash: unable to send feature metrics"', '"Unleash: \u65E0\u6CD5\u53D1\u9001\u529F\u80FD\u6307\u6807"'],  // Unleash: 无法发送功能指标
+        ['"on() must be used within a FlagProvider"', '"on() \u5FC5\u987B\u5728 FlagProvider \u4E2D\u4F7F\u7528"'],  // on() 必须在 FlagProvider 中使用
+        ['"off() must be used within a FlagProvider"', '"off() \u5FC5\u987B\u5728 FlagProvider \u4E2D\u4F7F\u7528"'],  // off() 必须在 FlagProvider 中使用
+        ['"updateContext() must be used within a FlagProvider"', '"updateContext() \u5FC5\u987B\u5728 FlagProvider \u4E2D\u4F7F\u7528"'],  // updateContext() 必须在 FlagProvider 中使用
+        ['"isEnabled() must be used within a FlagProvider"', '"isEnabled() \u5FC5\u987B\u5728 FlagProvider \u4E2D\u4F7F\u7528"'],  // isEnabled() 必须在 FlagProvider 中使用
+        ['"getVariant() must be used within a FlagProvider"', '"getVariant() \u5FC5\u987B\u5728 FlagProvider \u4E2D\u4F7F\u7528"'],  // getVariant() 必须在 FlagProvider 中使用
+        ['"useOnSendMessageContext must be used within an OnSendMessageContextProvider"', '"useOnSendMessageContext \u5FC5\u987B\u5728 OnSendMessageContextProvider \u4E2D\u4F7F\u7528"'],  // useOnSendMessageContext 必须在 OnSendMessageContextProvider 中使用
+        ['"Failed to update conversation annotations:"', '"\u66F4\u65B0\u5BF9\u8BDD\u6CE8\u91CA\u5931\u8D25:"'],  // 更新对话注释失败:
+        ['"Auto Agent not supported at GDM (yet)"', '"GDM \u6682\u4E0D\u652F\u6301\u81EA\u52A8\u4EE3\u7406"'],  // GDM 暂不支持自动代理
+        ['"Failed to send message"', '"\u53D1\u9001\u6D88\u606F\u5931\u8D25"'],  // 发送消息失败
+        ['"Error fetching model statuses:"', '"\u83B7\u53D6\u6A21\u578B\u72B6\u6001\u65F6\u51FA\u9519:"'],  // 获取模型状态时出错:
+        ['"Exception in backgroundFetchModelStatuses:"', '"backgroundFetchModelStatuses \u4E2D\u53D1\u751F\u5F02\u5E38:"'],  // backgroundFetchModelStatuses 中发生异常:
+        ['"Failed to fetch user status:"', '"\u83B7\u53D6\u7528\u6237\u72B6\u6001\u5931\u8D25:"'],  // 获取用户状态失败:
+        ['"[Paste Interceptor] No selection found"', '"[\u7C98\u8D34\u62E6\u622A\u5668] \u672A\u627E\u5230\u9009\u62E9\u5185\u5BB9"'],  // [粘贴拦截器] 未找到选择内容
+        ['"No trigger was found for the editor"', '"\u672A\u627E\u5230\u7F16\u8F91\u5668\u7684\u89E6\u53D1\u5668"'],  // 未找到编辑器的触发器
+        ['"Error fetching workflows:"', '"\u83B7\u53D6\u5DE5\u4F5C\u6D41\u65F6\u51FA\u9519:"'],  // 获取工作流时出错:
+        ['"Error fetching rules:"', '"\u83B7\u53D6\u89C4\u5219\u65F6\u51FA\u9519:"'],  // 获取规则时出错:
+        ['"Error listing MCP resources:"', '"\u5217\u51FA MCP \u8D44\u6E90\u65F6\u51FA\u9519:"'],  // 列出 MCP 资源时出错:
+        ['"Error listing terminals:"', '"\u5217\u51FA\u7EC8\u7AEF\u65F6\u51FA\u9519:"'],  // 列出终端时出错:
+        ['"Error listing MCP server names:"', '"\u5217\u51FA MCP \u670D\u52A1\u5668\u540D\u79F0\u65F6\u51FA\u9519:"'],  // 列出 MCP 服务器名称时出错:
+        ['"Failed to open Review Changes:"', '"\u6253\u5F00\u5BA1\u67E5\u66F4\u6539\u5931\u8D25:"'],  // 打开审查更改失败:
+        ['"Failed to get workspace infos:"', '"\u83B7\u53D6\u5DE5\u4F5C\u533A\u4FE1\u606F\u5931\u8D25:"'],  // 获取工作区信息失败:
+        ['"Failed to export conversation:"', '"\u5BFC\u51FA\u5BF9\u8BDD\u5931\u8D25:"'],  // 导出对话失败:
+        ['"Error fetching MCP servers:"', '"\u83B7\u53D6 MCP \u670D\u52A1\u5668\u65F6\u51FA\u9519:"'],  // 获取 MCP 服务器时出错:
+        ['"Error: unable to parse context item"', '"\u9519\u8BEF: \u65E0\u6CD5\u89E3\u6790\u4E0A\u4E0B\u6587\u9879"'],  // 错误: 无法解析上下文项
+        ['"Error in connection error handler:"', '"\u8FDE\u63A5\u9519\u8BEF\u5904\u7406\u7A0B\u5E8F\u4E2D\u51FA\u9519:"'],  // 连接错误处理程序中出错:
+        ['"Unknown request case:"', '"\u672A\u77E5\u8BF7\u6C42\u7C7B\u578B:"'],  // 未知请求类型:
+        ['"Unexpected error starting chat client server stream:"', '"\u542F\u52A8\u804A\u5929\u5BA2\u6237\u7AEF\u670D\u52A1\u5668\u6D41\u65F6\u53D1\u751F\u610F\u5916\u9519\u8BEF:"'],  // 启动聊天客户端服务器流时发生意外错误:
+        ['"Chat client server stream canceled by original abort signal"', '"\u804A\u5929\u5BA2\u6237\u7AEF\u670D\u52A1\u5668\u6D41\u88AB\u539F\u59CB\u4E2D\u6B62\u4FE1\u53F7\u53D6\u6D88"'],  // 聊天客户端服务器流被原始中止信号取消
+        ['"Error starting chat client server stream:"', '"\u542F\u52A8\u804A\u5929\u5BA2\u6237\u7AEF\u670D\u52A1\u5668\u6D41\u65F6\u51FA\u9519:"'],  // 启动聊天客户端服务器流时出错:
+        ['"Failed to update user settings:"', '"\u66F4\u65B0\u7528\u6237\u8BBE\u7F6E\u5931\u8D25:"'],  // 更新用户设置失败:
+        ['"Error sharing trajectory:"', '"\u5206\u4EAB\u8F68\u8FF9\u65F6\u51FA\u9519:"'],  // 分享轨迹时出错:
+        ['"forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"', '"forceFrameRate \u63A5\u53D7 0 \u5230 125 \u4E4B\u95F4\u7684\u6B63\u6574\u6570\uFF0C\u4E0D\u652F\u6301\u5F3A\u5236\u5E27\u7387\u9AD8\u4E8E 125 fps"'],  // forceFrameRate 接受 0 到 125 之间的正整数，不支持强制帧率高于 125 fps
+        ['"A component is changing from controlled to uncontrolled. This may be caused by the value changing from a defined value to undefined, which should not happen."', '"\u7EC4\u4EF6\u6B63\u5728\u4ECE\u53D7\u63A7\u53D8\u4E3A\u975E\u53D7\u63A7\u3002\u8FD9\u53EF\u80FD\u662F\u7531\u4E8E\u503C\u4ECE\u5DF2\u5B9A\u4E49\u53D8\u4E3A undefined\uFF0C\u8FD9\u4E0D\u5E94\u8BE5\u53D1\u751F\u3002"'],  // 组件正在从受控变为非受控。这可能是由于值从已定义变为 undefined，这不应该发生。
+        ['"A component is changing from uncontrolled to controlled. This may be caused by the value changing from undefined to a defined value, which should not happen."', '"\u7EC4\u4EF6\u6B63\u5728\u4ECE\u975E\u53D7\u63A7\u53D8\u4E3A\u53D7\u63A7\u3002\u8FD9\u53EF\u80FD\u662F\u7531\u4E8E\u503C\u4ECE undefined \u53D8\u4E3A\u5DF2\u5B9A\u4E49\u503C\uFF0C\u8FD9\u4E0D\u5E94\u8BE5\u53D1\u751F\u3002"'],  // 组件正在从非受控变为受控。这可能是由于值从 undefined 变为已定义值，这不应该发生。
+        ['"Nonretryable error starting chat client server stream:"', '"\u542F\u52A8\u804A\u5929\u5BA2\u6237\u7AEF\u670D\u52A1\u5668\u6D41\u65F6\u53D1\u751F\u4E0D\u53EF\u91CD\u8BD5\u9519\u8BEF:"'],  // 启动聊天客户端服务器流时发生不可重试错误:
+        ['"Error copying to clipboard:"', '"\u590D\u5236\u5230\u526A\u8D34\u677F\u65F6\u51FA\u9519:"'],  // 复制到剪贴板时出错:
+        ['"Failed to capture browser console logs: No console logs found"', '"\u6355\u83B7\u6D4F\u89C8\u5668\u63A7\u5236\u53F0\u65E5\u5FD7\u5931\u8D25: \u672A\u627E\u5230\u63A7\u5236\u53F0\u65E5\u5FD7"'],  // 捕获浏览器控制台日志失败: 未找到控制台日志
+        ['"Failed to capture browser console logs:"', '"\u6355\u83B7\u6D4F\u89C8\u5668\u63A7\u5236\u53F0\u65E5\u5FD7\u5931\u8D25:"'],  // 捕获浏览器控制台日志失败:
+        ['"Failed to capture screenshot:"', '"\u6355\u83B7\u622A\u56FE\u5931\u8D25:"'],  // 捕获截图失败:
+        ['"Failed to fetch revert preview:"', '"\u83B7\u53D6\u8FD8\u539F\u9884\u89C8\u5931\u8D25:"'],  // 获取还原预览失败:
+        ['"Error opening MCP page:"', '"\u6253\u5F00 MCP \u9875\u9762\u65F6\u51FA\u9519:"'],  // 打开 MCP 页面时出错:
+        ['"Error opening MCP config modal:"', '"\u6253\u5F00 MCP \u914D\u7F6E\u5F39\u7A97\u65F6\u51FA\u9519:"'],  // 打开 MCP 配置弹窗时出错:
+        ['"Error opening configure page:"', '"\u6253\u5F00\u914D\u7F6E\u9875\u9762\u65F6\u51FA\u9519:"'],  // 打开配置页面时出错:
+        ['"Error parsing file diff JSON data:"', '"\u89E3\u6790\u6587\u4EF6\u5DEE\u5F02 JSON \u6570\u636E\u65F6\u51FA\u9519:"'],  // 解析文件差异 JSON 数据时出错:
+        ['"Failed to close all diff zones:"', '"\u5173\u95ED\u6240\u6709\u5DEE\u5F02\u533A\u57DF\u5931\u8D25:"'],  // 关闭所有差异区域失败:
+        ['"Browser is not enabled for this plan"', '"\u6B64\u8BA1\u5212\u672A\u542F\u7528\u6D4F\u89C8\u5668\u529F\u80FD"'],  // 此计划未启用浏览器功能
+        ['"URL is required"', '"\u9700\u8981 URL"'],  // 需要 URL
+        ['"url is required"', '"\u9700\u8981 url"'],  // 需要 url
+        ['"Missing API key. Please make sure you are signed in to Antigravity. If the problem persists, please restart the IDE."', '"\u7F3A\u5C11 API \u5BC6\u94A5\u3002\u8BF7\u786E\u4FDD\u60A8\u5DF2\u767B\u5F55 Antigravity\u3002\u5982\u679C\u95EE\u9898\u4ECD\u7136\u5B58\u5728\uFF0C\u8BF7\u91CD\u542F IDE\u3002"'],  // 缺少 API 密钥。请确保您已登录 Antigravity。如果问题仍然存在，请重启 IDE。
+        ['"Function not implemented."', '"\u529F\u80FD\u672A\u5B9E\u73B0\u3002"'],  // 功能未实现。
+        ['"clientKey is required"', '"\u9700\u8981 clientKey"'],  // 需要 clientKey
+        ['"appName is required."', '"\u9700\u8981 appName\u3002"'],  // 需要 appName。
+        ['"Objects are not valid as a React child (found: "', '"\u5BF9\u8C61\u4E0D\u662F\u6709\u6548\u7684 React \u5B50\u5143\u7D20 (\u53D1\u73B0: "'],  // 对象不是有效的 React 子元素 (发现: 
+        ['"React.Children.only expected to receive a single React element child."', '"React.Children.only \u671F\u671B\u63A5\u6536\u5355\u4E2A React \u5143\u7D20\u5B50\u8282\u70B9\u3002"'],  // React.Children.only 期望接收单个 React 元素子节点。
+        ['"Unknown encoding: "', '"\u672A\u77E5\u7F16\u7801: "'],  // 未知编码: 
+        ['"out of range index"', '"\u7D22\u5F15\u8D85\u51FA\u8303\u56F4"'],  // 索引超出范围
+        ['"BigInt not supported"', '"\u4E0D\u652F\u6301 BigInt"'],  // 不支持 BigInt
+        ['"invalid base64 string."', '"\u65E0\u6548\u7684 base64 \u5B57\u7B26\u4E32\u3002"'],  // 无效的 base64 字符串。
+        ['"invalid UTF8"', '"\u65E0\u6548\u7684 UTF8"'],  // 无效的 UTF8
+        ['"premature EOF"', '"\u8FC7\u65E9\u7684\u6587\u4EF6\u7ED3\u675F"'],  // 过早的文件结束
+        ['"useLanguageServerContext must be used within a LanguageServerContextProvider"', '"useLanguageServerContext \u5FC5\u987B\u5728 LanguageServerContextProvider \u4E2D\u4F7F\u7528"'],  // useLanguageServerContext 必须在 LanguageServerContextProvider 中使用
+        ['"useContextMenuContext must be used within a ContextMenuProvider"', '"useContextMenuContext \u5FC5\u987B\u5728 ContextMenuProvider \u4E2D\u4F7F\u7528"'],  // useContextMenuContext 必须在 ContextMenuProvider 中使用
+        ['"useAgentWorkbenchContext must be used within an AgentWorkbenchContextProvider"', '"useAgentWorkbenchContext \u5FC5\u987B\u5728 AgentWorkbenchContextProvider \u4E2D\u4F7F\u7528"'],  // useAgentWorkbenchContext 必须在 AgentWorkbenchContextProvider 中使用
+        ['"useBrowserContext must be used within a BrowserContextProvider"', '"useBrowserContext \u5FC5\u987B\u5728 BrowserContextProvider \u4E2D\u4F7F\u7528"'],  // useBrowserContext 必须在 BrowserContextProvider 中使用
+        ['"useRegisterChatClientRequestHandler must be used within a ChatClientServerContextProvider"', '"useRegisterChatClientRequestHandler \u5FC5\u987B\u5728 ChatClientServerContextProvider \u4E2D\u4F7F\u7528"'],  // useRegisterChatClientRequestHandler 必须在 ChatClientServerContextProvider 中使用
+        ['"useTrajectorySummariesContext must be used within a TrajectorySummariesProvider"', '"useTrajectorySummariesContext \u5FC5\u987B\u5728 TrajectorySummariesProvider \u4E2D\u4F7F\u7528"'],  // useTrajectorySummariesContext 必须在 TrajectorySummariesProvider 中使用
+        ['"useMessageHistoryContext must be used within a MessageHistoryContextProvider"', '"useMessageHistoryContext \u5FC5\u987B\u5728 MessageHistoryContextProvider \u4E2D\u4F7F\u7528"'],  // useMessageHistoryContext 必须在 MessageHistoryContextProvider 中使用
+        ['"useTokenThemeContext must be used within a TokenThemeContextProvider"', '"useTokenThemeContext \u5FC5\u987B\u5728 TokenThemeContextProvider \u4E2D\u4F7F\u7528"'],  // useTokenThemeContext 必须在 TokenThemeContextProvider 中使用
+        ['"You have to provide an `open` and an `onClose` prop to the `Dialog` component."', '"\u60A8\u5FC5\u987B\u4E3A `Dialog` \u7EC4\u4EF6\u63D0\u4F9B `open` \u548C `onClose` \u5C5E\u6027\u3002"'],  // 您必须为 `Dialog` 组件提供 `open` 和 `onClose` 属性。
+        ['"You provided an `onClose` prop to the `Dialog`, but forgot an `open` prop."', '"\u60A8\u4E3A `Dialog` \u63D0\u4F9B\u4E86 `onClose` \u5C5E\u6027\uFF0C\u4F46\u5FD8\u8BB0\u4E86 `open` \u5C5E\u6027\u3002"'],  // 您为 `Dialog` 提供了 `onClose` 属性，但忘记了 `open` 属性。
+        ['"You provided an `open` prop to the `Dialog`, but forgot an `onClose` prop."', '"\u60A8\u4E3A `Dialog` \u63D0\u4F9B\u4E86 `open` \u5C5E\u6027\uFF0C\u4F46\u5FD8\u8BB0\u4E86 `onClose` \u5C5E\u6027\u3002"'],  // 您为 `Dialog` 提供了 `open` 属性，但忘记了 `onClose` 属性。
+        ['"Path must be a string. Received "', '"\u8DEF\u5F84\u5FC5\u987B\u662F\u5B57\u7B26\u4E32\u3002\u6536\u5230 "'],  // 路径必须是字符串。收到 
+        ['"The URL must be of scheme file"', '"URL \u5FC5\u987B\u662F file \u534F\u8BAE"'],  // URL 必须是 file 协议
+        ['"Generator is already executing."', '"\u751F\u6210\u5668\u5DF2\u5728\u6267\u884C\u4E2D\u3002"'],  // 生成器已在执行中。
+        ['"Unknown unit "', '"\u672A\u77E5\u5355\u4F4D "'],  // 未知单位 
+        ['"Unexpected object: "', '"\u610F\u5916\u7684\u5BF9\u8C61: "'],  // 意外的对象: 
+        ['"unable to serialize "', '"\u65E0\u6CD5\u5E8F\u5217\u5316 "'],  // 无法序列化 
+        ['"This undo action will not make any code changes."', '"\u6B64\u64A4\u9500\u64CD\u4F5C\u4E0D\u4F1A\u8FDB\u884C\u4EFB\u4F55\u4EE3\u7801\u66F4\u6539\u3002"'],  // 此撤销操作不会进行任何代码更改。
+        ['"Messages can be sent while the agent is still working and your message will be queued and taken into consideration at the next available break in reasoning."', '"\u60A8\u53EF\u4EE5\u5728\u4EE3\u7406\u4ECD\u5728\u5DE5\u4F5C\u65F6\u53D1\u9001\u6D88\u606F\uFF0C\u60A8\u7684\u6D88\u606F\u5C06\u88AB\u6392\u961F\uFF0C\u5E76\u5728\u4E0B\u4E00\u4E2A\u53EF\u7528\u7684\u63A8\u7406\u95F4\u6B47\u65F6\u88AB\u8003\u8651\u3002"'],  // 您可以在代理仍在工作时发送消息，您的消息将被排队，并在下一个可用的推理间歇时被考虑。
+        ['"This tool runs code that can access IDE extension APIs and potentially change the functionality of your IDE the same way that an IDE extension or plugin can."', '"\u6B64\u5DE5\u5177\u8FD0\u884C\u7684\u4EE3\u7801\u53EF\u4EE5\u8BBF\u95EE IDE \u6269\u5C55 API\uFF0C\u5E76\u53EF\u80FD\u4EE5\u4E0E IDE \u6269\u5C55\u6216\u63D2\u4EF6\u76F8\u540C\u7684\u65B9\u5F0F\u66F4\u6539 IDE \u7684\u529F\u80FD\u3002"'],  // 此工具运行的代码可以访问 IDE 扩展 API，并可能以与 IDE 扩展或插件相同的方式更改 IDE 的功能。
+        ['"Too many requests, please try again in a bit!"', '"\u8BF7\u6C42\u8FC7\u591A\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5\uFF01"'],  // 请求过多，请稍后重试！
+        ['"This error is likely temporary. You can prompt the model to try again after some time."', '"\u6B64\u9519\u8BEF\u53EF\u80FD\u662F\u6682\u65F6\u7684\u3002\u60A8\u53EF\u4EE5\u7A0D\u540E\u63D0\u793A\u6A21\u578B\u91CD\u8BD5\u3002"'],  // 此错误可能是暂时的。您可以稍后提示模型重试。
+        ['"Get notified when the agent needs your attention or completes a task."', '"\u5F53\u4EE3\u7406\u9700\u8981\u60A8\u6CE8\u610F\u6216\u5B8C\u6210\u4EFB\u52A1\u65F6\u83B7\u5F97\u901A\u77E5\u3002"'],  // 当代理需要您注意或完成任务时获得通知。
+        ['"This model is currently experiencing some issues."', '"\u6B64\u6A21\u578B\u5F53\u524D\u9047\u5230\u4E00\u4E9B\u95EE\u9898\u3002"'],  // 此模型当前遇到一些问题。
+        ['"Failed to load "', '"\u52A0\u8F7D\u5931\u8D25 "'],  // 加载失败 
+        ['"Did you make sure to report this error on Slack?"', '"\u60A8\u786E\u5B9A\u5DF2\u5728 Slack \u4E0A\u62A5\u544A\u6B64\u9519\u8BEF\u4E86\u5417\uFF1F"'],  // 您确定已在 Slack 上报告此错误了吗？
+        ['"Standard conversational mode."', '"\u6807\u51C6\u5BF9\u8BDD\u6A21\u5F0F\u3002"'],  // 标准对话模式。
+        ['"Uses Google conversational mixin."', '"\u4F7F\u7528 Google \u5BF9\u8BDD\u6DF7\u5165\u3002"'],  // 使用 Google 对话混入。
+        ['"Uses custom mixin."', '"\u4F7F\u7528\u81EA\u5B9A\u4E49\u6DF7\u5165\u3002"'],  // 使用自定义混入。
+        ['"You can prompt the model to try again or start a new conversation if the error persists."', '"\u60A8\u53EF\u4EE5\u91CD\u8BD5\u63D0\u793A\u6A21\u578B\uFF0C\u6216\u8005\u5982\u679C\u9519\u8BEF\u6301\u7EED\u5B58\u5728\uFF0C\u53EF\u4EE5\u5F00\u59CB\u65B0\u7684\u5BF9\u8BDD\u3002"'],  // 您可以重试提示模型，或者如果错误持续存在，可以开始新的对话。
+        ['"for more help."', '"\u83B7\u53D6\u66F4\u591A\u5E2E\u52A9\u3002"'],  // 获取更多帮助。
     ];
 }
 
@@ -564,6 +1124,7 @@ function getWorkbenchReplacements() {
         ['text:l?"Collapse all":"Expand all"', 'text:l?"全部折叠":"全部展开"'],
         ['children:"Expand All"', 'children:"全部展开"'],
         ['children:"Collapse All"', 'children:"全部折叠"'],
+        ['`Thinking for ${TTe(t)}`', '`思考中 ${TTe(t)}`'],
         ['`Thought for ${', '`思考了 ${'],
         ['children:"Thought Process"', 'children:"思考过程"'],
         ['"Auto-proceeded by the agent under your review policy."', '"已由 Agent 根据您的审查策略自动继续。"'],
@@ -581,7 +1142,7 @@ function getWorkbenchReplacements() {
             'children:"产物是 Agent 在对话中创建的文件，用于帮助执行较长时间运行的任务并允许用户提供高级反馈。点击在编辑器中打开。"'],
         ['children:"Artifact Name"', 'children:"产物名称"'],
         ['children:"Last Updated"', 'children:"最后更新"'],
-        ['`Artifacts (${t.length} Files for Conversation)`', '`产物 (${t.length} 个对话文件)`'],
+        ['`Artifacts (${t.length} Files for Conversation)`', '`对话产物 (${t.length} 个文件)`'],
         ['children:"AI may make mistakes. Double-check all generated code."', 'children:"AI 可能会犯错。请仔细检查所有生成的代码。"'],
         ['children:"Send"', 'children:"发送"'],
         ['"Audio is not supported for this model"', '"该模型不支持音频"'],
@@ -607,7 +1168,7 @@ function getWorkbenchReplacements() {
 // 补丁引擎
 // ═══════════════════════════════════════════════════════════════
 
-const PATCH_VERSION = 'v24';
+const PATCH_VERSION = 'v35';
 const PATCH_MARKER = `/* zh-hans-patched-${PATCH_VERSION} */`;
 
 function getPatchVersion(filepath) {
