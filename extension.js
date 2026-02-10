@@ -478,6 +478,8 @@ function getChatReplacements() {
 
 function getWorkbenchReplacements() {
     return [
+        // 0. Disable integrity check to prevent "Installation seems corrupt" warning
+        ['this.f.checksums||{}', '{}||{}'],
         // 1. On/Off enum
         ['i.ON="On",i.OFF="Off"', 'i.ON="开",i.OFF="关"'],
         // 2. Tab labels
@@ -605,7 +607,7 @@ function getWorkbenchReplacements() {
 // 补丁引擎
 // ═══════════════════════════════════════════════════════════════
 
-const PATCH_VERSION = 'v4';
+const PATCH_VERSION = 'v24';
 const PATCH_MARKER = `/* zh-hans-patched-${PATCH_VERSION} */`;
 
 function getPatchVersion(filepath) {
@@ -672,9 +674,9 @@ function revertFile(filepath) {
 
 function updateChecksums(base) {
     const productJsonPath = path.join(base, 'product.json');
-    if (!fs.existsSync(productJsonPath)) return;
+    if (!fs.existsSync(productJsonPath)) return 0;
 
-    // Backup
+    // Backup original product.json (only once)
     const backup = productJsonPath + '.bak';
     if (!fs.existsSync(backup)) {
         fs.copyFileSync(productJsonPath, backup);
@@ -683,35 +685,13 @@ function updateChecksums(base) {
     const raw = fs.readFileSync(productJsonPath, 'utf-8');
     const product = JSON.parse(raw);
 
-    // If checksums exist, recalculate them for modified files
+    // Clear checksums entirely to prevent integrity check failures.
+    // Antigravity checks these checksums on startup BEFORE extensions load,
+    // so recalculating hashes doesn't help — we must remove them.
     if (product.checksums && Object.keys(product.checksums).length > 0) {
-        const checksums = product.checksums;
-        let updated = 0;
-
-        for (const key of Object.keys(checksums)) {
-            const candidates = [
-                path.join(base, 'out', key),
-                path.join(base, key),
-            ];
-            for (const filepath of candidates) {
-                if (fs.existsSync(filepath)) {
-                    const data = fs.readFileSync(filepath);
-                    const newHash = crypto.createHash('sha256').update(data).digest('base64').replace(/=+$/, '');
-                    if (newHash !== checksums[key]) {
-                        checksums[key] = newHash;
-                        updated++;
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (updated > 0) {
-            product.checksums = checksums;
-            fs.writeFileSync(productJsonPath, JSON.stringify(product, null, '\t'), 'utf-8');
-        }
-
-        return updated;
+        product.checksums = {};
+        fs.writeFileSync(productJsonPath, JSON.stringify(product, null, '\t'), 'utf-8');
+        return 1;
     }
 
     return 0;
