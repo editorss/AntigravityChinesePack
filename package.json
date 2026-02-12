@@ -2,7 +2,7 @@
 	"name": "antigravity-language-pack-zh-hans",
 	"displayName": "Chinese (Simplified) (简体中文) Language Pack for Antigravity",
 	"description": "Antigravity IDE 简体中文语言包扩展 — 为 Antigravity 专属功能提供中文翻译（含 NLS + 硬编码字符串补丁）",
-	"version": "1.2.8",
+	"version": "1.3.4",
 	"publisher": "editorss",
 	"repository": {
 		"type": "git",

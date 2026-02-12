@@ -146,6 +146,7 @@ function getSettingsReplacements() {
         ['label:"Run"', 'label:"运行"'],
         ['label:"Running"', 'label:"运行中"'],
         ['label:"Close"', 'label:"关闭"'],
+        ['label:"Ran command"', 'label:"执行命令"'],
         ['label:"Close Workspace"', 'label:"关闭工作区"'],
         ['label:"Delete Conversation"', 'label:"删除对话"'],
         ['label:"Start Conversation"', 'label:"开始对话"'],
@@ -161,10 +162,11 @@ function getSettingsReplacements() {
         ['children:"Expand All"', 'children:"全部展开"'],
         ['children:"Collapse All"', 'children:"全部折叠"'],
         // === Ask / Changes / Expand / Thought / Status (main.js uses same patterns) ===
-        ['"Ask anything, @ to mention, / for workflows"', '"随便问，@ 提及，/ 调用工作流"'],
+        ['"Ask anything, @ to mention, / for workflows"', '"输入任何内容，@ 用于提及，/ 用于调用工作流"'],
         ['`Changes Overview (${d})`', '`更改概览 (${d})`'],
+        ['`Terminal (${d})`', '`终端 (${d})`'],
         ['text:l?"Collapse all":"Expand all"', 'text:l?"全部折叠":"全部展开"'],
-        ['`Thinking for ${l8(t)}`', '`思考中 ${l8(t)}`'],
+        ['`Thinking for ${TTe(t)}`', '`思考中 ${TTe(t)}`'],
         ['`Thought for ${', '`思考了 ${'],
         ['children:"Thought Process"', 'children:"思考过程"'],
         ['"Auto-proceeded by the agent under your review policy."', '"已由 Agent 根据您的审查策略自动继续。"'],
@@ -243,6 +245,7 @@ function getChatReplacements() {
         ['children:"Ran command"', 'children:"执行命令"'],
         // 注意: 实际 chat.js 中是模板字面量 `Exit code ${e.exitCode}`，非双引号字符串
         ['Exit code ${e.exitCode}', '\\u9000\\u51FA\\u7801 ${e.exitCode}'],
+        ['Ran command', '执行命令'],
         ['children:"Preview"', 'children:"预览"'],
         ['children:"Refresh"', 'children:"刷新"'],
         ['children:"Retry"', 'children:"重试"'],
@@ -433,9 +436,9 @@ function getChatReplacements() {
         ['label:"Run"', 'label:"运行"'],
         // === New: Start / Ask / Changes / Expand / Thought / Status ===
         ['children:["Start a New Conversation"', 'children:["开始新对话"'],
-        ['inputPlaceholder:i="Ask anything, @ to mention, / for workflows"', 'inputPlaceholder:i="随便问，@ 提及，/ 调用工作流"'],
-        ['placeholder??"Ask anything - use \'@\' to mention code blocks"', 'placeholder??"随便问 - 用 \'@\' 提及代码块"'],
-        ['`Ask anything (${r?"⌘L":"Ctrl+L"}), @ to mention, / for workflows`', '`随便问 (${r?"⌘L":"Ctrl+L"})，@ 提及，/ 调用工作流`'],
+        ['inputPlaceholder:i="Ask anything, @ to mention, / for workflows"', 'inputPlaceholder:i="输入任何内容，@ 用于提及，/ 用于调用工作流"'],
+        ['placeholder??"Ask anything - use \'@\' to mention code blocks"', 'placeholder??"输入任何内容 - 用 \'@\' 用于提及代码块"'],
+        ['`Ask anything (${r?"⌘L":"Ctrl+L"}), @ to mention, / for workflows`', '`输入任何内容 (${r?"⌘L":"Ctrl+L"})，@ 用于提及，/ 用于调用工作流`'],
         ['`Changes Overview (${d})`', '`更改概览 (${d})`'],
         ['`Terminal (${d})`', '`终端 (${d})`'],
         ['`Artifacts (${d})`', '`产物 (${d})`'],
@@ -574,6 +577,11 @@ function getChatReplacements() {
         ['"Closing"', '"\u5173\u95ED\u4E2D"'],  // 关闭中
         ['"Code Context Item Subranges"', '"\u4EE3\u7801\u4E0A\u4E0B\u6587\u5B50\u8303\u56F4"'],  // 代码上下文子范围
         ['"Code Context Items"', '"\u4EE3\u7801\u4E0A\u4E0B\u6587\u9879"'],  // 代码上下文项
+        ['"Files"', '"\u6587\u4EF6"'],  // 文件
+        ['"MCP servers"', '"MCP \u670D\u52A1\u5668"'],  // MCP 服务器
+        ['"Conversations"', '"\u804A\u5929\u5217\u8868"'],  // 对话列表
+        ['"Rules"', '"规则"'],  // 规则
+        ['"Terminal"', '"终端命令"'],  // 终端
         ['"Code Snippet"', '"\u4EE3\u7801\u7247\u6BB5"'],  // 代码片段
         ['"Combobox"', '"\u7EC4\u5408\u6846"'],  // 组合框
         ['"Configure Auto-Run"', '"\u914D\u7F6E\u81EA\u52A8\u8FD0\u884C"'],  // 配置自动运行
@@ -582,11 +590,11 @@ function getChatReplacements() {
         ['"Console Logs"', '"\u63A7\u5236\u53F0\u65E5\u5FD7"'],  // 控制台日志
         ['"Conversational"', '"\u5BF9\u8BDD\u5F0F"'],  // 对话式
         ['"Coordinated Universal Time"', '"\u534F\u8C03\u4E16\u754C\u65F6"'],  // 协调世界时
-        ['"copied"', '"\u5DF2\u590D\u5236"'],  // 已复制
         ['"Copied"', '"\u5DF2\u590D\u5236"'],  // 已复制
         ['"Copy Link"', '"\u590D\u5236\u94FE\u63A5"'],  // 复制链接
         ['"Copy to clipboard"', '"\u590D\u5236\u5230\u526A\u8D34\u677F"'],  // 复制到剪贴板
         ['"Cost"', '"\u6210\u672C"'],  // 成本
+        ['"Ran command"', '"\u884C\u884C\u547D\u4EE4"'],  // 运行命令
         ['"Created At"', '"\u521B\u5EFA\u65F6\u95F4"'],  // 创建时间
         ['"Created:"', '"\u521B\u5EFA\u4E8E:"'],  // 创建于:
         ['"Creating"', '"\u521B\u5EFA\u4E2D"'],  // 创建中
@@ -1119,8 +1127,9 @@ function getWorkbenchReplacements() {
         ['label:"Submit"', 'label:"提交"'],
         // === New: Start / Ask / Changes / Expand / Thought / Status ===
         ['children:["Start a New Conversation"', 'children:["开始新对话"'],
-        ['"Ask anything, @ to mention, / for workflows"', '"随便问，@ 提及，/ 调用工作流"'],
+        ['"Ask anything, @ to mention, / for workflows"', '"输入任何内容，@ 用于提及，/ 用于调用工作流"'],
         ['`Changes Overview (${h})`', '`更改概览 (${h})`'],
+        ['`Terminal (${d})`', '`终端 (${d})`'],
         ['text:l?"Collapse all":"Expand all"', 'text:l?"全部折叠":"全部展开"'],
         ['children:"Expand All"', 'children:"全部展开"'],
         ['children:"Collapse All"', 'children:"全部折叠"'],
@@ -1168,7 +1177,7 @@ function getWorkbenchReplacements() {
 // 补丁引擎
 // ═══════════════════════════════════════════════════════════════
 
-const PATCH_VERSION = 'v35';
+const PATCH_VERSION = 'v41';
 const PATCH_MARKER = `/* zh-hans-patched-${PATCH_VERSION} */`;
 
 function getPatchVersion(filepath) {
