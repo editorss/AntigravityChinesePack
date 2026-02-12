@@ -1177,7 +1177,7 @@ function getWorkbenchReplacements() {
 // 补丁引擎
 // ═══════════════════════════════════════════════════════════════
 
-const PATCH_VERSION = 'v41';
+const PATCH_VERSION = 'v42';
 const PATCH_MARKER = `/* zh-hans-patched-${PATCH_VERSION} */`;
 
 function getPatchVersion(filepath) {
@@ -1278,6 +1278,73 @@ function revertChecksums(base) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// 自动更新屏蔽
+// ═══════════════════════════════════════════════════════════════
+
+const BLOCKED_UPDATE_URL = 'https://localhost.invalid/no-update';
+
+function isAutoUpdateBlocked(base) {
+    const productJsonPath = path.join(base, 'product.json');
+    const backup = productJsonPath + '.bak';
+    if (!fs.existsSync(productJsonPath)) return false;
+    try {
+        const product = JSON.parse(fs.readFileSync(productJsonPath, 'utf-8'));
+        // 如果 updateUrl 不存在或为空，且备份中有原始 updateUrl，则说明已屏蔽
+        if (!product.updateUrl && fs.existsSync(backup)) {
+            const original = JSON.parse(fs.readFileSync(backup, 'utf-8'));
+            return !!original.updateUrl;
+        }
+        return product.updateUrl === BLOCKED_UPDATE_URL;
+    } catch {
+        return false;
+    }
+}
+
+function blockAutoUpdate(base) {
+    const productJsonPath = path.join(base, 'product.json');
+    if (!fs.existsSync(productJsonPath)) return false;
+
+    // Ensure backup exists
+    const backup = productJsonPath + '.bak';
+    if (!fs.existsSync(backup)) {
+        fs.copyFileSync(productJsonPath, backup);
+    }
+
+    try {
+        const product = JSON.parse(fs.readFileSync(productJsonPath, 'utf-8'));
+        if (product.updateUrl) {
+            delete product.updateUrl;
+            fs.writeFileSync(productJsonPath, JSON.stringify(product, null, '\t'), 'utf-8');
+        }
+        return true;
+    } catch (e) {
+        console.error('[antigravity-zh] 屏蔽更新失败:', e);
+        return false;
+    }
+}
+
+function unblockAutoUpdate(base) {
+    const productJsonPath = path.join(base, 'product.json');
+    const backup = productJsonPath + '.bak';
+
+    if (!fs.existsSync(backup)) return false;
+
+    try {
+        // Read backup to get original updateUrl
+        const original = JSON.parse(fs.readFileSync(backup, 'utf-8'));
+        const product = JSON.parse(fs.readFileSync(productJsonPath, 'utf-8'));
+        if (original.updateUrl) {
+            product.updateUrl = original.updateUrl;
+        }
+        fs.writeFileSync(productJsonPath, JSON.stringify(product, null, '\t'), 'utf-8');
+        return true;
+    } catch (e) {
+        console.error('[antigravity-zh] 恢复更新失败:', e);
+        return false;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // 插件激活 / 命令
 // ═══════════════════════════════════════════════════════════════
 
@@ -1359,14 +1426,110 @@ function revertAllPatches() {
     });
 }
 
+// 状态栏项（模块级变量）
+let updateBlockStatusBar;
+
+function updateStatusBar(base) {
+    if (!updateBlockStatusBar) return;
+    const blocked = base ? isAutoUpdateBlocked(base) : false;
+    if (blocked) {
+        updateBlockStatusBar.text = '$(shield) 更新已屏蔽';
+        updateBlockStatusBar.tooltip = '已屏蔽 Antigravity 自动更新检测，点击恢复';
+        updateBlockStatusBar.color = new vscode.ThemeColor('statusBarItem.warningForeground');
+        updateBlockStatusBar.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+    } else {
+        updateBlockStatusBar.text = '$(shield) 更新正常';
+        updateBlockStatusBar.tooltip = '点击屏蔽 Antigravity 自动更新检测';
+        updateBlockStatusBar.color = undefined;
+        updateBlockStatusBar.backgroundColor = undefined;
+    }
+}
+
 function activate(context) {
-    // 注册命令
+    const base = getAppBase();
+
+    // ── 状态栏 ──
+    updateBlockStatusBar = vscode.window.createStatusBarItem(
+        vscode.StatusBarAlignment.Right, 100
+    );
+    updateBlockStatusBar.command = 'antigravity-zh.toggleBlockUpdate';
+    updateStatusBar(base);
+    updateBlockStatusBar.show();
+    context.subscriptions.push(updateBlockStatusBar);
+
+    // ── 注册命令 ──
     context.subscriptions.push(
         vscode.commands.registerCommand('antigravity-zh.applyPatch', () => applyAllPatches(false)),
-        vscode.commands.registerCommand('antigravity-zh.revertPatch', () => revertAllPatches())
+        vscode.commands.registerCommand('antigravity-zh.revertPatch', () => revertAllPatches()),
+        vscode.commands.registerCommand('antigravity-zh.toggleBlockUpdate', () => {
+            const b = getAppBase();
+            if (!b) {
+                vscode.window.showErrorMessage('未找到 Antigravity 安装目录');
+                return;
+            }
+
+            const currentlyBlocked = isAutoUpdateBlocked(b);
+
+            if (currentlyBlocked) {
+                // 恢复更新
+                if (unblockAutoUpdate(b)) {
+                    updateStatusBar(b);
+                    vscode.window.showInformationMessage(
+                        '已恢复 Antigravity 自动更新。请重启 IDE 生效。',
+                        '重新加载窗口'
+                    ).then(choice => {
+                        if (choice === '重新加载窗口') {
+                            vscode.commands.executeCommand('workbench.action.reloadWindow');
+                        }
+                    });
+                } else {
+                    vscode.window.showErrorMessage('恢复更新失败，请检查文件权限。');
+                }
+            } else {
+                // 屏蔽更新
+                vscode.window.showWarningMessage(
+                    '屏蔽自动更新后将无法收到新版本通知和安全补丁。确认屏蔽？',
+                    '确认屏蔽', '取消'
+                ).then(choice => {
+                    if (choice === '确认屏蔽') {
+                        if (blockAutoUpdate(b)) {
+                            updateStatusBar(b);
+                            vscode.window.showInformationMessage(
+                                '已屏蔽 Antigravity 自动更新检测。请重启 IDE 生效。',
+                                '重新加载窗口'
+                            ).then(c => {
+                                if (c === '重新加载窗口') {
+                                    vscode.commands.executeCommand('workbench.action.reloadWindow');
+                                }
+                            });
+                        } else {
+                            vscode.window.showErrorMessage('屏蔽更新失败，请检查文件权限。');
+                        }
+                    }
+                });
+            }
+        })
     );
 
-    // 启动时自动检测并应用
+    // ── 监听配置变更 ──
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('antigravity-zh.blockAutoUpdate')) {
+                const b = getAppBase();
+                if (!b) return;
+                const shouldBlock = vscode.workspace.getConfiguration('antigravity-zh').get('blockAutoUpdate', false);
+                if (shouldBlock && !isAutoUpdateBlocked(b)) {
+                    blockAutoUpdate(b);
+                    updateStatusBar(b);
+                } else if (!shouldBlock && isAutoUpdateBlocked(b)) {
+                    unblockAutoUpdate(b);
+                    updateStatusBar(b);
+                }
+            }
+        })
+    );
+
+    // ── 启动时自动检测并应用汉化补丁 ──
     setTimeout(() => {
         try {
             applyAllPatches(true);
